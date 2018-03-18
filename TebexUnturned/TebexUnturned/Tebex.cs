@@ -4,7 +4,6 @@ using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
 using Rocket.Unturned;
 using Rocket.Unturned.Chat;
-using Steamworks;
 
 namespace TebexUnturned
 {
@@ -12,6 +11,7 @@ namespace TebexUnturned
     {
         private DateTime lastCalled = DateTime.Now;
         public static Tebex Instance;
+        public TebexWebclient webclient;
 
         private void checkCheck()
         {
@@ -25,10 +25,12 @@ namespace TebexUnturned
         protected override void Load()
         {
             Instance = this;
-            Logger.LogWarning("Tebex Loaded");
+            Instance.webclient = new TebexWebclient(Instance);
+            
+            logWarning("Tebex Loaded");
             if (Instance.Configuration.Instance.secret == "")
             {
-                Logger.LogError("You have not yet defined your secret key. Use /tebex secret <secret> to define your key");
+                logError("You have not yet defined your secret key. Use /tebex secret <secret> to define your key");
             }
         }
 
@@ -36,23 +38,25 @@ namespace TebexUnturned
         {
             UnturnedChat.Say("Hello!");
             UnturnedConsole.print("We said hello...");
+            logWarning("We said hello!");
         }
 
-        public static void SetSecret(String secret)
+        public void SetSecret(String secret)
+        {
+            Instance.Configuration.Instance.secret = secret;
+            webclient.Get("information");
+        }
+
+        public void DoCheck()
+        {
+        }
+
+        public void UpdatePackages()
         {
             
         }
 
-        public static void DoCheck()
-        {
-        }
-
-        public static void UpdatePackages()
-        {
-            
-        }
-
-        public static void GetInfo()
+        public void GetInfo()
         {
             
         }
@@ -63,6 +67,17 @@ namespace TebexUnturned
             if (this.isActiveAndEnabled)
                 this.checkCheck();
         }
+
+        public static void logWarning(String message)
+        {
+            Logger.LogWarning(message);
+        }
+
+        public static void logError(String message)
+        {
+            Logger.LogError(message);
+        }
+
     }       
 
 }
