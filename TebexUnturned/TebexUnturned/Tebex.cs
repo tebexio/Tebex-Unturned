@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Json;
 using Rocket.API;
 using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
@@ -41,22 +42,23 @@ namespace TebexUnturned
             logWarning("We said hello!");
         }
 
-        public void SetSecret(String secret)
+        public static void SetSecret(String secret)
         {
             Instance.Configuration.Instance.secret = secret;
-            webclient.Get("information");
+            Instance.webclient.Get("information", value => { });
         }
 
-        public void DoCheck()
+
+        public static void DoCheck()
         {
         }
 
-        public void UpdatePackages()
+        public static void UpdatePackages()
         {
             
         }
 
-        public void GetInfo()
+        public static void GetInfo()
         {
             
         }
