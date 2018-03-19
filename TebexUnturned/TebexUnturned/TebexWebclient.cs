@@ -17,8 +17,7 @@ namespace TebexUnturned
         {
             this.plugin = plugin;
             this.DefaultRequestHeaders.Add("X-Buycraft-Secret", this.plugin.Configuration.Instance.secret);
-        }
-        
+        }        
         
         public async void Get(String endpoint, Action<JsonValue> callback)
         {
