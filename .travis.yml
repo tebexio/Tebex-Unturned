@@ -1,2 +1,5 @@
 language: csharp
 solution: TebexUnturned/TebexUnturned.sln
+install:
+	- nuget sources Add -Name RocketMod -Source https://www.myget.org/F/rocketmod/api/v3/index.json
+	- nuget restore TebexUnturned/TebexUnturned.sln
