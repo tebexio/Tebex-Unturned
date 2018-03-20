@@ -1,10 +1,15 @@
 ﻿using System;
-using System.Json;
+using System.ComponentModel.Design;
+using System.Net;
+using System.Runtime.CompilerServices;
+using System.Runtime.Remoting.Channels;
+using System.Threading.Tasks;
 using Rocket.API;
 using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
 using Rocket.Unturned;
 using Rocket.Unturned.Chat;
+using TebexUnturned.Models;
 
 namespace TebexUnturned
 {
@@ -12,7 +17,7 @@ namespace TebexUnturned
     {
         private DateTime lastCalled = DateTime.Now;
         public static Tebex Instance;
-        public TebexWebclient webclient;
+        public WebstoreInfo information;
 
         private void checkCheck()
         {
@@ -25,29 +30,31 @@ namespace TebexUnturned
 
         protected override void Load()
         {
+            this.information = new WebstoreInfo();
             Instance = this;
-            Instance.webclient = new TebexWebclient(Instance);
+            
             
             logWarning("Tebex Loaded");
             if (Instance.Configuration.Instance.secret == "")
             {
-                logError("You have not yet defined your secret key. Use /tebex secret <secret> to define your key");
+                logError("You have not yet defined your secret key. Use /tebex:secret <secret> to define your key");
             }
+            else
+            {
+                CommandTebexInfo infoCommand = new CommandTebexInfo();
+                String[] command = new[] { "tebex:info" };
+                infoCommand.Execute(new ConsolePlayer(), command);
+            }
+
+            System.Net.ServicePointManager.ServerCertificateValidationCallback +=
+                (sender, certificate, chain, errors) => { return true; };
         }
 
-        public static void SendChat()
+        public static void SendChat(String message)
         {
-            UnturnedChat.Say("Hello!");
-            UnturnedConsole.print("We said hello...");
+            UnturnedChat.Say(message);
             logWarning("We said hello!");
         }
-
-        public static void SetSecret(String secret)
-        {
-            Instance.Configuration.Instance.secret = secret;
-            Instance.webclient.Get("information", value => { });
-        }
-
 
         public static void DoCheck()
         {
@@ -57,12 +64,6 @@ namespace TebexUnturned
         {
             
         }
-
-        public static void GetInfo()
-        {
-            
-        }
-
 
         public void FixedUpdate()
         {
