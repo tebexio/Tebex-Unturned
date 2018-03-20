@@ -62,10 +62,11 @@ namespace TebexUnturned
                 amp = "&";
             }
             
-            Tebex.logWarning("GET " + url);
+            Tebex.logWarning("DELETE " + url);
 
             wc.UploadStringCompleted += (sender, e) =>
             {
+                Tebex.logWarning(e.Result);
                 wc.Dispose();
             };
 
