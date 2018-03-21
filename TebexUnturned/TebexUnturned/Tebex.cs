@@ -1,73 +1,67 @@
 ﻿using System;
-using System.Json;
+using System.ComponentModel.Design;
+using System.Net;
+using System.Runtime.CompilerServices;
+using System.Runtime.Remoting.Channels;
+using System.Threading.Tasks;
 using Rocket.API;
 using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
 using Rocket.Unturned;
 using Rocket.Unturned.Chat;
+using TebexUnturned.Models;
 
 namespace TebexUnturned
 {
     public class Tebex : RocketPlugin<TebexConfiguration>
     {
-        private DateTime lastCalled = DateTime.Now;
+        private DateTime lastCalled = DateTime.Now.AddMinutes(-14);
         public static Tebex Instance;
-        public TebexWebclient webclient;
+        public int nextCheck = 15 * 60;
+        public WebstoreInfo information;
 
-        private void checkCheck()
+        private void checkQueue()
         {
-            if ((DateTime.Now - this.lastCalled).TotalSeconds > 120)
+            if ((DateTime.Now - this.lastCalled).TotalSeconds > Tebex.Instance.nextCheck)
             {
-                DoCheck();
+                
                 this.lastCalled = DateTime.Now;
+                CommandTebexForcecheck checkCommand = new CommandTebexForcecheck();
+                String[] command = new[] { "tebex:forcecheck" };
+                checkCommand.Execute(new ConsolePlayer(), command);                
             }
         }
 
         protected override void Load()
         {
+            this.information = new WebstoreInfo();
             Instance = this;
-            Instance.webclient = new TebexWebclient(Instance);
+            
             
             logWarning("Tebex Loaded");
             if (Instance.Configuration.Instance.secret == "")
             {
-                logError("You have not yet defined your secret key. Use /tebex secret <secret> to define your key");
+                logError("You have not yet defined your secret key. Use /tebex:secret <secret> to define your key");
             }
-        }
+            else
+            {
+                CommandTebexInfo infoCommand = new CommandTebexInfo();
+                String[] command = new[] { "tebex:info" };
+                infoCommand.Execute(new ConsolePlayer(), command);
+            }
 
-        public static void SendChat()
-        {
-            UnturnedChat.Say("Hello!");
-            UnturnedConsole.print("We said hello...");
-            logWarning("We said hello!");
+            System.Net.ServicePointManager.ServerCertificateValidationCallback +=
+                (sender, certificate, chain, errors) => { return true; };
         }
-
-        public static void SetSecret(String secret)
-        {
-            Instance.Configuration.Instance.secret = secret;
-            Instance.webclient.Get("information", value => { });
-        }
-
 
         public static void DoCheck()
         {
         }
 
-        public static void UpdatePackages()
-        {
-            
-        }
-
-        public static void GetInfo()
-        {
-            
-        }
-
-
         public void FixedUpdate()
         {
             if (this.isActiveAndEnabled)
-                this.checkCheck();
+                this.checkQueue();
         }
 
         public static void logWarning(String message)
