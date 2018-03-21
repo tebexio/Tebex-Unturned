@@ -46,9 +46,14 @@ namespace TebexUnturned
         {
             if ((bool) response["meta"]["execute_offline"])
             {
-                TebexCommandRunner.doOfflineCommands();
-                
-                Tebex.logWarning("Continue....");
+                try
+                {
+                    TebexCommandRunner.doOfflineCommands();
+                }
+                catch (Exception e)
+                {
+                    Tebex.logError(e.ToString());
+                }
             }
         }
 
