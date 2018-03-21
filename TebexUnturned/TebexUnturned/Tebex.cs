@@ -15,16 +15,20 @@ namespace TebexUnturned
 {
     public class Tebex : RocketPlugin<TebexConfiguration>
     {
-        private DateTime lastCalled = DateTime.Now;
+        private DateTime lastCalled = DateTime.Now.AddMinutes(-14);
         public static Tebex Instance;
+        public int nextCheck = 15 * 60;
         public WebstoreInfo information;
 
-        private void checkCheck()
+        private void checkQueue()
         {
-            if ((DateTime.Now - this.lastCalled).TotalSeconds > 120)
+            if ((DateTime.Now - this.lastCalled).TotalSeconds > Tebex.Instance.nextCheck)
             {
-                DoCheck();
+                
                 this.lastCalled = DateTime.Now;
+                CommandTebexForcecheck checkCommand = new CommandTebexForcecheck();
+                String[] command = new[] { "tebex:forcecheck" };
+                checkCommand.Execute(new ConsolePlayer(), command);                
             }
         }
 
@@ -50,25 +54,14 @@ namespace TebexUnturned
                 (sender, certificate, chain, errors) => { return true; };
         }
 
-        public static void SendChat(String message)
-        {
-            UnturnedChat.Say(message);
-            logWarning("We said hello!");
-        }
-
         public static void DoCheck()
         {
-        }
-
-        public static void UpdatePackages()
-        {
-            
         }
 
         public void FixedUpdate()
         {
             if (this.isActiveAndEnabled)
-                this.checkCheck();
+                this.checkQueue();
         }
 
         public static void logWarning(String message)

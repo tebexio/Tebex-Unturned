@@ -8,6 +8,7 @@ using Rocket.Unturned.Chat;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using Steamworks;
 
 namespace TebexUnturned
 {
@@ -28,7 +29,8 @@ namespace TebexUnturned
         public List<string> Permissions => new List<string>() { "tebex.admin" };
 
         public void Execute(IRocketPlayer caller, string[] command)
-        {           
+        {
+            Tebex.logWarning("Checking for commands to be executed...");
             try
             {               
                 TebexApiClient wc = new TebexApiClient();
@@ -44,6 +46,11 @@ namespace TebexUnturned
 
         public void HandleResponse(JObject response)
         {
+            if ((int) response["meta"]["next_check"] > 0)
+            {
+                Tebex.Instance.nextCheck = (int) response["meta"]["next_check"];
+            }
+            
             if ((bool) response["meta"]["execute_offline"])
             {
                 try
@@ -53,6 +60,30 @@ namespace TebexUnturned
                 catch (Exception e)
                 {
                     Tebex.logError(e.ToString());
+                }
+            }
+            
+            JArray players = (JArray) response["players"];
+
+            foreach (var player in players)
+            {
+                try
+                {
+                    CSteamID steamId = new CSteamID((ulong) player["uuid"]);
+                    UnturnedPlayer targetPlayer = UnturnedPlayer.FromCSteamID(steamId);
+
+                    if (targetPlayer.Player != null)
+                    {
+                        Tebex.logWarning("Execute commands for " + (string) targetPlayer.CharacterName + "(ID: "+targetPlayer.CSteamID.ToString()+")");
+                        TebexCommandRunner.doOnlineCommands((int) player["id"], (string) targetPlayer.CharacterName,
+                            targetPlayer.CSteamID.ToString());
+
+
+                    }
+                }
+                catch (Exception e)
+                {
+                    Tebex.logError(e.Message);
                 }
             }
         }
