@@ -15,7 +15,7 @@ namespace TebexUnturned
 
         public bool RunFromConsole => true;
 
-        public string Name => "buy";
+        public string Name => "tebex:buy";
 
         public string Help => "Buy from our webstore";
         
