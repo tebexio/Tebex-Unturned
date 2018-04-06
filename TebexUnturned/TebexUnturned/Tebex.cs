@@ -52,6 +52,9 @@ namespace TebexUnturned
 
             System.Net.ServicePointManager.ServerCertificateValidationCallback +=
                 (sender, certificate, chain, errors) => { return true; };
+            
+            ChatListener chatListener = new ChatListener();
+            chatListener.Register(this);
         }
 
         public static void DoCheck()
