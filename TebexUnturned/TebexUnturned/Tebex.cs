@@ -51,6 +51,7 @@ namespace TebexUnturned
             
             ChatListener chatListener = new ChatListener();
             chatListener.Register(this);
+            SetTimer();
         }
 
         /*public static void DoCheck()
