@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Newtonsoft.Json.Linq;
 using Rocket.API;
 
@@ -10,5 +10,5 @@ namespace TebexUnturned
 
         void HandleError(Exception e);
         
-    }    
+    }  
 }

@@ -1,20 +1,16 @@
-﻿using System;
-using System.ComponentModel.Design;
-using System.Net;
-using System.Runtime.CompilerServices;
-using System.Runtime.Remoting.Channels;
-using System.Threading.Tasks;
+using System;
+using System.Timers;
 using Rocket.API;
-using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
-using Rocket.Unturned;
-using Rocket.Unturned.Chat;
 using TebexUnturned.Models;
+using Logger = Rocket.Core.Logging.Logger;
 
 namespace TebexUnturned
 {
-    public class Tebex : RocketPlugin<TebexConfiguration>
+    public class Tebex : RocketPlugin<TebexConfiguration> 
     {
+        
+        private static System.Timers.Timer aTimer;
         private DateTime lastCalled = DateTime.Now.AddMinutes(-14);
         public static Tebex Instance;
         public int nextCheck = 15 * 60;
@@ -57,15 +53,30 @@ namespace TebexUnturned
             chatListener.Register(this);
         }
 
-        public static void DoCheck()
+        /*public static void DoCheck()
         {
+        }*/
+
+        private void SetTimer()
+        {
+            aTimer = new System.Timers.Timer(Instance.Configuration.Instance.CheckIntervalInSeconds * 1000);
+            aTimer.Elapsed += OnTimedEvent;
+            aTimer.AutoReset = true;
+            aTimer.Enabled = true;
+
         }
 
-        public void FixedUpdate()
+        public void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
             if (this.isActiveAndEnabled)
                 this.checkQueue();
         }
+
+        /*public void FixedUpdate()
+        {
+            if (this.isActiveAndEnabled)
+                this.checkQueue();
+        }*/
 
         public static void logWarning(String message)
         {
@@ -77,6 +88,5 @@ namespace TebexUnturned
             Logger.LogError(message);
         }
 
-    }       
-
+    } 
 }
