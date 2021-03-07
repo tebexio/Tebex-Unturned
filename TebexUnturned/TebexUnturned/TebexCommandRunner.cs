@@ -5,6 +5,7 @@ using System.Threading;
 using Newtonsoft.Json.Linq;
 using Rocket.API;
 using Rocket.Core;
+using Rocket.Core.Utils;
 using SDG.Unturned;
 
 namespace TebexUnturned
@@ -38,9 +39,11 @@ namespace TebexUnturned
                     
                     Tebex.logWarning("Run command " + commandToRun);
                     ConsolePlayer executer = new ConsolePlayer(); 
+                    TaskDispatcher.QueueOnMainThread(() => {
                     R.Commands.Execute(executer, commandToRun);
-
+                    });
                     executedCommands.Add((int) command["id"]);
+
 
                     exCount++;
 
@@ -106,8 +109,8 @@ namespace TebexUnturned
                     String commandToRun = buildCommand((string) command["command"], playerName, playerId);
                     
                     Tebex.logWarning("Run command " + commandToRun);
-                    ConsolePlayer executer = new ConsolePlayer(); 
-                    R.Commands.Execute(executer, commandToRun);
+                    ConsolePlayer executer = new ConsolePlayer();
+                    TaskDispatcher.QueueOnMainThread(() => { R.Commands.Execute(executer, commandToRun); });
                     executedCommands.Add((int) command["id"]);
 
                     exCount++;

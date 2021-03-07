@@ -1,4 +1,5 @@
 using Rocket.API;
+using Rocket.Core.Utils;
 using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
@@ -10,6 +11,7 @@ namespace TebexUnturned
     {
         public void Register(IRocketPlugin plugin)
         {
+            TaskDispatcher.QueueOnMainThread(() => {
             UnturnedPlayerEvents.OnPlayerChatted += (UnturnedPlayer player, ref Color color, string message,
                 EChatMode mode, ref bool cancel) =>
             {
@@ -22,6 +24,7 @@ namespace TebexUnturned
                         Tebex.Instance.information.domain);                    
                 }
             };
+            });
         }   
     }
 }

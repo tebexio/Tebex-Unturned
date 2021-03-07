@@ -60,7 +60,8 @@ namespace TebexUnturned
 
         private void SetTimer()
         {
-            aTimer = new System.Timers.Timer(Instance.Configuration.Instance.CheckIntervalInSeconds * 1000);
+            int time = Configuration.Instance.CheckIntervalInSeconds * 1000;
+            aTimer = new System.Timers.Timer(time);
             aTimer.Elapsed += OnTimedEvent;
             aTimer.AutoReset = true;
             aTimer.Enabled = true;

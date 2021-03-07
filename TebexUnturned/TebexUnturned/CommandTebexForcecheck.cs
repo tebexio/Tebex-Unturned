@@ -1,13 +1,8 @@
-﻿using System;
-using UnityEngine;
+using System;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using Rocket.API;
 using Rocket.Unturned.Player;
-using Rocket.Unturned;
-using Rocket.Unturned.Commands;
-using Rocket.Unturned.Chat;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
 using Steamworks;
 
 namespace TebexUnturned
@@ -77,8 +72,6 @@ namespace TebexUnturned
                         Tebex.logWarning("Execute commands for " + (string) targetPlayer.CharacterName + "(ID: "+targetPlayer.CSteamID.ToString()+")");
                         TebexCommandRunner.doOnlineCommands((int) player["id"], (string) targetPlayer.CharacterName,
                             targetPlayer.CSteamID.ToString());
-
-
                     }
                 }
                 catch (Exception e)
