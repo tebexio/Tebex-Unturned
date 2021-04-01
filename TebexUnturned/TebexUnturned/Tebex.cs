@@ -74,7 +74,7 @@ namespace TebexUnturned
 
         public void OnTimedEvent(object sender, ElapsedEventArgs e)
         {
-            if (this.isActiveAndEnabled)
+            if (this.isActiveAndEnabled && Instance.Configuration.Instance.secret != "")
                 this.checkQueue();
         }
 
