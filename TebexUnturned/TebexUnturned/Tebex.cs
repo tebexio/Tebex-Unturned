@@ -61,6 +61,10 @@ namespace TebexUnturned
         private void SetTimer()
         {
             int time = Configuration.Instance.CheckIntervalInSeconds * 1000;
+            //Don't allow checks shorter than 60 seconds
+            if (time < 60000)
+                time = 60000;
+
             aTimer = new System.Timers.Timer(time);
             aTimer.Elapsed += OnTimedEvent;
             aTimer.AutoReset = true;
