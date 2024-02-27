@@ -42,13 +42,13 @@
           <HintPath>..\packages\Newtonsoft.Json.13.0.1-beta1\lib\net45\Newtonsoft.Json.dll</HintPath>
           <Private>True</Private>
         </Reference>
-        <Reference Include="Rocket.API, Version=4.9.3.4, Culture=neutral, PublicKeyToken=null">
+        <Reference Include="Rocket.API">
           <HintPath>lib\Rocket.API.dll</HintPath>
         </Reference>
-        <Reference Include="Rocket.Core, Version=4.9.3.4, Culture=neutral, PublicKeyToken=null">
+        <Reference Include="Rocket.Core">
           <HintPath>lib\Rocket.Core.dll</HintPath>
         </Reference>
-        <Reference Include="Rocket.Unturned, Version=4.9.3.9, Culture=neutral, PublicKeyToken=null">
+        <Reference Include="Rocket.Unturned">
           <HintPath>lib\Rocket.Unturned.dll</HintPath>
         </Reference>
         <Reference Include="System" />
