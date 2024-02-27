@@ -9,6 +9,7 @@ using Tebex.API;
 using Tebex.Shared.Components;
 using Tebex.Triage;
 using TebexUnturned;
+using Logger = Rocket.Core.Logging.Logger;
 
 namespace Tebex.Plugins
 {
@@ -27,6 +28,7 @@ namespace Tebex.Plugins
 
         protected override void Load()
         {
+            Logger.LogError("Starting up");
             Init();
         }
 

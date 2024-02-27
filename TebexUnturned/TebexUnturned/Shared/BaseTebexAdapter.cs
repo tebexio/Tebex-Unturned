@@ -118,7 +118,10 @@ namespace Tebex.Adapters
             
             public void LoadDefaults()
             {
-                throw new NotImplementedException();
+                DebugMode = false;
+                AutoReportingEnabled = true;
+                SecretKey = "your-secret-key-here";
+                CacheLifetime = 30;
             }
         }
         

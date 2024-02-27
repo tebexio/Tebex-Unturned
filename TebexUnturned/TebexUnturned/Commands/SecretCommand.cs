@@ -8,19 +8,19 @@ namespace TebexUnturned.Commands
 {
     public class SecretCommand : UnturnedCommand
     {
-        public AllowedCaller AllowedCaller => AllowedCaller.Console;
+        public new AllowedCaller AllowedCaller => AllowedCaller.Console;
 
         public bool RunFromConsole => true;
 
-        public string Name => "tebex:secret";
+        public new string Name => "tebex:secret";
 
-        public string Help => "Connects to your webstore using the secret key.";
+        public new string Help => "Connects to your webstore using the secret key.";
         
-        public string Syntax => "<secretKey>";
+        public new string Syntax => "<secretKey>";
 
-        public List<string> Aliases => new List<string>() { "tebex.secret"};
+        public new List<string> Aliases => new List<string>() { "tebex.secret"};
 
-        public List<string> Permissions => new List<string>() { "tebex.admin" };
+        public new List<string> Permissions => new List<string>() { "tebex.admin" };
 
         public override void Execute(IRocketPlayer player, string[] args)
         {

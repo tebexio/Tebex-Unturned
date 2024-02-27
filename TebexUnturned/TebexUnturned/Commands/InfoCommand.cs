@@ -6,19 +6,19 @@ namespace TebexUnturned.Commands
 {
     public class InfoCommand : UnturnedCommand
     {
-        public AllowedCaller AllowedCaller => AllowedCaller.Console;
+        public new AllowedCaller AllowedCaller => AllowedCaller.Console;
 
         public bool RunFromConsole => true;
 
-        public string Name => "tebex:info";
+        public new string Name => "tebex:info";
 
-        public string Help => "Force check packages currently waiting to be executed";
+        public new string Help => "Force check packages currently waiting to be executed";
         
-        public string Syntax => "";
+        public new string Syntax => "";
 
-        public List<string> Aliases => new List<string>();
+        public new List<string> Aliases => new List<string>();
 
-        public List<string> Permissions => new List<string>() { "tebex.admin" };
+        public new List<string> Permissions => new List<string>() { "tebex.admin" };
 
         public override void Execute(IRocketPlayer player, string[] args)
         {
