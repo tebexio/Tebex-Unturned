@@ -63,18 +63,45 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="ChatListener.cs" />
-        <Compile Include="CommandTebexBuy.cs" />
-        <Compile Include="CommandTebexForceCheck.cs" />
-        <Compile Include="CommandTebexInfo.cs" />
-        <Compile Include="CommandTebexSecret.cs" />
-        <Compile Include="ITebexCommand.cs" />
-        <Compile Include="Models\WebstoreInfo.cs" />
+        <Compile Include="Commands\BanCommand.cs" />
+        <Compile Include="Commands\CategoriesCommand.cs" />
+        <Compile Include="Commands\CheckoutCommand.cs" />
+        <Compile Include="Commands\DebugCommand.cs" />
+        <Compile Include="Commands\ForceCheckCommand.cs" />
+        <Compile Include="Commands\HelpCommand.cs" />
+        <Compile Include="Commands\InfoCommand.cs" />
+        <Compile Include="Commands\LookupCommand.cs" />
+        <Compile Include="Commands\PackagesCommand.cs" />
+        <Compile Include="Commands\RefreshCommand.cs" />
+        <Compile Include="Commands\ReportCommand.cs" />
+        <Compile Include="Commands\SecretCommand.cs" />
+        <Compile Include="Commands\SendLinkCommand.cs" />
+        <Compile Include="Commands\UnbanCommand.cs" />
+        <Compile Include="Legacy\CommandTebexBuy.cs" />
+        <Compile Include="Legacy\CommandTebexForceCheck.cs" />
+        <Compile Include="Legacy\CommandTebexInfo.cs" />
+        <Compile Include="Legacy\CommandTebexSecret.cs" />
+        <Compile Include="Legacy\ITebexCommand.cs" />
+        <Compile Include="Legacy\Models\WebstoreInfo.cs" />
+        <Compile Include="Legacy\TebexLegacy.cs" />
+        <Compile Include="Legacy\TebexApiClient.cs" />
+        <Compile Include="Legacy\TebexCommandRunner.cs" />
+        <Compile Include="Legacy\TebexConfiguration.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="Tebex.cs" />
-        <Compile Include="TebexApiClient.cs" />
-        <Compile Include="TebexCommandRunner.cs" />
-        <Compile Include="TebexConfiguration.cs" />
+        <Compile Include="Shared\BaseTebexAdapter.cs" />
+        <Compile Include="Shared\Components\ICommand.cs" />
+        <Compile Include="Shared\Components\IPlayer.cs" />
+        <Compile Include="Shared\Components\IPlayerManager.cs" />
+        <Compile Include="Shared\Components\IServer.cs" />
+        <Compile Include="Shared\Components\PluginTimers.cs" />
+        <Compile Include="Shared\Components\WebRequests.cs" />
+        <Compile Include="Shared\TebexApi.cs" />
+        <Compile Include="Shared\TebexTriage.cs" />
+        <Compile Include="TebexUnturned.cs" />
+        <Compile Include="TebexUnturnedAdapter.cs" />
+        <Compile Include="TebexUnturnedAdapter.cs" />
+        <Compile Include="UnturnedChatListener.cs" />
+        <Compile Include="UnturnedCommand.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />

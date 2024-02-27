@@ -2,13 +2,13 @@ using System;
 using System.Net;
 using Newtonsoft.Json.Linq;
 
-namespace TebexUnturned
+namespace TebexUnturned.Legacy
 {
     public class TebexApiClient : WebClient
     {
 
         //time in milliseconds
-        private Tebex plugin;
+        private TebexLegacy plugin;
         private int timeout;
         public int Timeout
         {
@@ -22,7 +22,7 @@ namespace TebexUnturned
             }
         }
 
-        public void setPlugin(Tebex plugin)
+        public void setPlugin(TebexLegacy plugin)
         {
             this.plugin = plugin;
         }
@@ -36,7 +36,7 @@ namespace TebexUnturned
         {
             this.Headers.Add("X-Buycraft-Secret", this.plugin.Configuration.Instance.secret);
             String url = this.plugin.Configuration.Instance.baseUrl + endpoint;
-            Tebex.logWarning("GET " + url);
+            TebexLegacy.logWarning("GET " + url);
             this.DownloadStringCompleted += (sender, e) =>
             {
                 if (!e.Cancelled && e.Error == null)

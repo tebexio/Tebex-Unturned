@@ -2,7 +2,7 @@ using System;
 using Newtonsoft.Json.Linq;
 using Rocket.API;
 
-namespace TebexUnturned
+namespace TebexUnturned.Legacy
 {
     public interface ITebexCommand : IRocketCommand
     {

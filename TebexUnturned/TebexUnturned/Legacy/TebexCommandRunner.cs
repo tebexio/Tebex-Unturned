@@ -8,7 +8,7 @@ using Rocket.Core;
 using Rocket.Core.Utils;
 using SDG.Unturned;
 
-namespace TebexUnturned
+namespace TebexUnturned.Legacy
 {
     public class TebexCommandRunner
     {
@@ -18,10 +18,10 @@ namespace TebexUnturned
         public static void doOfflineCommands()
         {
             TebexApiClient wc = new TebexApiClient();
-            wc.setPlugin(Tebex.Instance);
-            wc.Headers.Add("X-Buycraft-Secret", Tebex.Instance.Configuration.Instance.secret);            
-            String url = Tebex.Instance.Configuration.Instance.baseUrl + "queue/offline-commands";
-            Tebex.logWarning("GET " + url);
+            wc.setPlugin(TebexLegacy.Instance);
+            wc.Headers.Add("X-Buycraft-Secret", TebexLegacy.Instance.Configuration.Instance.secret);            
+            String url = TebexLegacy.Instance.Configuration.Instance.baseUrl + "queue/offline-commands";
+            TebexLegacy.logWarning("GET " + url);
 
             wc.DownloadStringCompleted += (sender, e) =>
             {
@@ -37,7 +37,7 @@ namespace TebexUnturned
                     String commandToRun = buildCommand((string) command["command"], (string) command["player"]["name"],
                         (string) command["player"]["uuid"]);
                     
-                    Tebex.logWarning("Run command " + commandToRun);
+                    TebexLegacy.logWarning("Run command " + commandToRun);
                     ConsolePlayer executer = new ConsolePlayer(); 
                     TaskDispatcher.QueueOnMainThread(() => {
                     R.Commands.Execute(executer, commandToRun);
@@ -56,13 +56,13 @@ namespace TebexUnturned
                         }
                         catch (Exception ex)
                         {
-                            Tebex.logError(ex.ToString());
+                            TebexLegacy.logError(ex.ToString());
                         }
                     }
                     
                 }
                 
-                Tebex.logWarning(exCount.ToString() + " offline commands executed");
+                TebexLegacy.logWarning(exCount.ToString() + " offline commands executed");
                 if (exCount % deleteAfter != 0)
                 {
                     try
@@ -72,7 +72,7 @@ namespace TebexUnturned
                     }
                     catch (Exception ex)
                     {
-                        Tebex.logError(ex.ToString());
+                        TebexLegacy.logError(ex.ToString());
                     }
                 }
 
@@ -85,15 +85,15 @@ namespace TebexUnturned
         public static void doOnlineCommands(int playerPluginId, string playerName, string playerId)
         {
             
-            Tebex.logWarning("Running online commands for "+playerName+" (" + playerId + ")");
+            TebexLegacy.logWarning("Running online commands for "+playerName+" (" + playerId + ")");
             
             TebexApiClient wc = new TebexApiClient();
-            wc.setPlugin(Tebex.Instance);
-            wc.Headers.Add("X-Buycraft-Secret", Tebex.Instance.Configuration.Instance.secret);
-            String url = Tebex.Instance.Configuration.Instance.baseUrl + "queue/online-commands/" +
+            wc.setPlugin(TebexLegacy.Instance);
+            wc.Headers.Add("X-Buycraft-Secret", TebexLegacy.Instance.Configuration.Instance.secret);
+            String url = TebexLegacy.Instance.Configuration.Instance.baseUrl + "queue/online-commands/" +
                          playerPluginId.ToString();
 
-            Tebex.logWarning("GET " + url);
+            TebexLegacy.logWarning("GET " + url);
 
             wc.DownloadStringCompleted += (sender, e) =>
             {
@@ -108,7 +108,7 @@ namespace TebexUnturned
 
                     String commandToRun = buildCommand((string) command["command"], playerName, playerId);
                     
-                    Tebex.logWarning("Run command " + commandToRun);
+                    TebexLegacy.logWarning("Run command " + commandToRun);
                     ConsolePlayer executer = new ConsolePlayer();
                     TaskDispatcher.QueueOnMainThread(() => { R.Commands.Execute(executer, commandToRun); });
                     executedCommands.Add((int) command["id"]);
@@ -124,13 +124,13 @@ namespace TebexUnturned
                         }
                         catch (Exception ex)
                         {
-                            Tebex.logError(ex.ToString());
+                            TebexLegacy.logError(ex.ToString());
                         }
                     }
                     
                 }
                 
-                Tebex.logWarning(exCount.ToString() + " online commands executed for " + playerName);
+                TebexLegacy.logWarning(exCount.ToString() + " online commands executed for " + playerName);
                 if (exCount % deleteAfter != 0)
                 {
                     try
@@ -140,7 +140,7 @@ namespace TebexUnturned
                     }
                     catch (Exception ex)
                     {
-                        Tebex.logError(ex.ToString());
+                        TebexLegacy.logError(ex.ToString());
                     }
                 }
 
@@ -153,7 +153,7 @@ namespace TebexUnturned
         public static void deleteCommands(List<int> commandIds)
         {
 
-            String url = Tebex.Instance.Configuration.Instance.baseUrl + "queue?";
+            String url = TebexLegacy.Instance.Configuration.Instance.baseUrl + "queue?";
             String amp = "";
 
             foreach (int CommandId in commandIds)
@@ -162,11 +162,11 @@ namespace TebexUnturned
                 amp = "&";
             }
 
-            Tebex.logWarning("DELETE " + url);
+            TebexLegacy.logWarning("DELETE " + url);
 
             var request = WebRequest.Create(url);
             request.Method = "DELETE";
-            request.Headers.Add("X-Buycraft-Secret", Tebex.Instance.Configuration.Instance.secret);
+            request.Headers.Add("X-Buycraft-Secret", TebexLegacy.Instance.Configuration.Instance.secret);
             
             Thread thread = new Thread(() => request.GetResponse());  
             thread.Start();

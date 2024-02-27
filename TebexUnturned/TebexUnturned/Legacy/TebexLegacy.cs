@@ -2,29 +2,29 @@ using System;
 using System.Timers;
 using Rocket.API;
 using Rocket.Core.Plugins;
-using TebexUnturned.Models;
+using TebexUnturned.Legacy.Models;
 using Logger = Rocket.Core.Logging.Logger;
 
-namespace TebexUnturned
+namespace TebexUnturned.Legacy
 {
-    public class Tebex : RocketPlugin<TebexConfiguration> 
+    public class TebexLegacy : RocketPlugin<TebexConfiguration> 
     {
-        
         private static System.Timers.Timer aTimer;
         private DateTime lastCalled = DateTime.Now.AddMinutes(-14);
-        public static Tebex Instance;
+        public static TebexLegacy Instance;
         public int nextCheck = 15 * 60;
         public WebstoreInfo information;
 
         private void checkQueue()
         {
-            if ((DateTime.Now - this.lastCalled).TotalSeconds > Tebex.Instance.nextCheck)
+            if ((DateTime.Now - this.lastCalled).TotalSeconds > TebexLegacy.Instance.nextCheck)
             {
-                
                 this.lastCalled = DateTime.Now;
+                /* FIXME
                 CommandTebexForcecheck checkCommand = new CommandTebexForcecheck();
                 String[] command = new[] { "tebex:forcecheck" };
-                checkCommand.Execute(new ConsolePlayer(), command);                
+                checkCommand.Execute(new ConsolePlayer(), command);
+                */                
             }
         }
 
@@ -34,23 +34,25 @@ namespace TebexUnturned
             Instance = this;
             
             
-            logWarning("Tebex Loaded");
+            logWarning("Tebex Legacy Loaded");
             if (Instance.Configuration.Instance.secret == "")
             {
                 logError("You have not yet defined your secret key. Use /tebex:secret <secret> to define your key");
             }
             else
             {
+                /* FIXME?
                 CommandTebexInfo infoCommand = new CommandTebexInfo();
                 String[] command = new[] { "tebex:info" };
                 infoCommand.Execute(new ConsolePlayer(), command);
+                */
             }
 
             System.Net.ServicePointManager.ServerCertificateValidationCallback +=
                 (sender, certificate, chain, errors) => { return true; };
             
-            ChatListener chatListener = new ChatListener();
-            chatListener.Register(this);
+            //UnturnedChatListener unturnedChatListener = new UnturnedChatListener();
+            //unturnedChatListener.Register(this);
             SetTimer();
         }
 

@@ -1,7 +1,7 @@
 using System;
 using Rocket.API;
 
-namespace TebexUnturned
+namespace TebexUnturned.Legacy
 {
     public class TebexConfiguration : IRocketPluginConfiguration
     {

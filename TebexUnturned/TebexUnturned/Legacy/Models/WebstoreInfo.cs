@@ -1,4 +1,4 @@
-namespace TebexUnturned.Models
+namespace TebexUnturned.Legacy.Models
 {
     public class WebstoreInfo
     {
