@@ -9,7 +9,6 @@ using Tebex.API;
 using Tebex.Shared.Components;
 using Tebex.Triage;
 using TebexUnturned;
-using Logger = Rocket.Core.Logging.Logger;
 
 namespace Tebex.Plugins
 {
@@ -18,7 +17,7 @@ namespace Tebex.Plugins
         private static TebexUnturnedAdapter _adapter;
         private static WebRequests webrequest;
         private static IPlayerManager players;
-        private static PluginTimers timer;
+        private static PluginTimers timer = new PluginTimers();
         private static IServer server;
         
         public static string GetPluginVersion()
@@ -28,7 +27,6 @@ namespace Tebex.Plugins
 
         protected override void Load()
         {
-            Logger.LogError("Starting up");
             Init();
         }
 
@@ -36,6 +34,7 @@ namespace Tebex.Plugins
         {
             // Setup our API and adapter
             _adapter = new TebexUnturnedAdapter(this);
+            _adapter.LogInfo("Tebex is starting up...");
             TebexApi.Instance.InitAdapter(_adapter);
 
             //FIXME
@@ -214,6 +213,11 @@ namespace Tebex.Plugins
         private BaseTebexAdapter.TebexConfig GetDefaultConfig()
         {
             return new BaseTebexAdapter.TebexConfig();
+        }
+
+        public static BaseTebexAdapter GetAdapter()
+        {
+            return _adapter;
         }
     }
 }

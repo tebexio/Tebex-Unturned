@@ -1,5 +1,10 @@
+using Rocket.API;
+using Rocket.Unturned.Chat;
+using Rocket.Unturned.Player;
+using SDG.Unturned;
 using Tebex.API;
 using Tebex.Triage;
+using Logger = Rocket.Core.Logging.Logger;
 
 namespace Tebex.Adapters
 {
@@ -34,27 +39,42 @@ namespace Tebex.Adapters
 
         public override void LogWarning(string message)
         {
-            throw new System.NotImplementedException();
+            Logger.LogWarning(message);
         }
 
         public override void LogError(string message)
         {
-            throw new System.NotImplementedException();
+            Logger.LogError(message);
         }
 
         public override void LogInfo(string message)
         {
-            throw new System.NotImplementedException();
+            Logger.Log(message);
         }
 
         public override void LogDebug(string message)
         {
-            throw new System.NotImplementedException();
+            if (PluginConfig.DebugMode)
+            {
+                Logger.Log("[DEBUG]" + message);   
+            }
         }
 
         public override void ReplyPlayer(object player, string message)
         {
-            throw new System.NotImplementedException();
+            if (player is UnturnedPlayer)
+            {
+                UnturnedPlayer unturnedPlayer = (UnturnedPlayer)player;
+                UnturnedChat.Say(unturnedPlayer, message);
+            } else if (player is ConsolePlayer)
+            {
+                ConsolePlayer consolePlayer = (ConsolePlayer)player;
+                UnturnedChat.Say(consolePlayer, message);
+            }
+            else
+            {
+                LogError("Cannot send chat message to player of type: " + player.GetType());   
+            }
         }
 
         public override void ExecuteOfflineCommand(TebexApi.Command command, object playerObj, string commandName, string[] args)

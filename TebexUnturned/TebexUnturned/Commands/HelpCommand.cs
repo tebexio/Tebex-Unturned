@@ -4,24 +4,27 @@ using Tebex.Shared.Components;
 
 namespace TebexUnturned.Commands
 {
-    public class HelpCommand : UnturnedCommand
+    public class HelpCommand : IRocketCommand
     {
         public new AllowedCaller AllowedCaller => AllowedCaller.Console;
 
         public bool RunFromConsole => true;
 
-        public new string Name => "tebex:help";
+        public string Name => "tebex:help";
 
-        public new string Help => "Shows available commands.";
+        public string Help => "Shows available commands.";
         
-        public new string Syntax => "";
+        public string Syntax => "";
 
-        public new List<string> Aliases => new List<string>();
+        public List<string> Aliases => new List<string>();
 
-        public new List<string> Permissions => new List<string>() { "tebex.admin" };
+        public List<string> Permissions => new List<string>() { "tebex.admin" };
 
-        public override void Execute(IRocketPlayer player, string[] command)
+        public HelpCommand() {}
+        
+        public void Execute(IRocketPlayer player, string[] command)
         {
+            var _adapter = Tebex.Plugins.TebexUnturned.GetAdapter();
             _adapter.ReplyPlayer(player, "Tebex Commands Available:");
             if (player.IsAdmin) //Always show help to admins regardless of perms, for new server owners
             {
