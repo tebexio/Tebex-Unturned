@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
@@ -12,12 +13,13 @@ using TebexUnturned;
 
 namespace Tebex.Plugins
 {
-    public class TebexUnturned : RocketPlugin<BaseTebexAdapter.TebexConfig> 
+    public class TebexUnturned : RocketPlugin<BaseTebexAdapter.TebexConfig>
     {
         private static TebexUnturnedAdapter _adapter;
-        private static WebRequests webrequest;
+         
         private static IPlayerManager players;
-        private static PluginTimers timer = new PluginTimers();
+        private static PluginTimers _timers;
+        private static WebRequests _webrequest;
         private static IServer server;
         
         public static string GetPluginVersion()
@@ -37,15 +39,15 @@ namespace Tebex.Plugins
             _adapter.LogInfo("Tebex is starting up...");
             TebexApi.Instance.InitAdapter(_adapter);
 
-            //FIXME
-            /*
-            BaseTebexAdapter.PluginConfig = Config.ReadObject<BaseTebexAdapter.TebexConfig>();
-            if (!Config.Exists())
+            // Init plugin components so they have access to our adapter
+            _webrequest = new WebRequests(_adapter);
+            _timers = new PluginTimers(_adapter);
+            _timers.Every(0.5f, () =>
             {
-                //Creates new config file
-                LoadConfig();
-            }*/
-
+                Task task = _webrequest.ProcessNextRequestAsync();
+                task.RunSynchronously();
+            });
+ 
             // Check if auto reporting is disabled and show a warning if so.
             if (!BaseTebexAdapter.PluginConfig.AutoReportingEnabled)
             {
@@ -71,7 +73,7 @@ namespace Tebex.Plugins
 
         public WebRequests WebRequests()
         {
-            return webrequest;
+            return _webrequest;
         }
 
         public IPlayerManager PlayerManager()
@@ -81,7 +83,7 @@ namespace Tebex.Plugins
 
         public PluginTimers PluginTimers()
         {
-            return timer;
+            return _timers;
         }
 
         public IServer Server()
