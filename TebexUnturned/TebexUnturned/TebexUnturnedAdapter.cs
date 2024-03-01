@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Rocket.API;
 using Rocket.Unturned.Chat;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Tebex.API;
-using Tebex.Shared.Components;
 using Tebex.Triage;
 using Logger = Rocket.Core.Logging.Logger;
 
@@ -39,6 +39,11 @@ namespace Tebex.Adapters
             {
                 RefreshStoreInformation(false);
             });
+            Plugin.PluginTimers().Every(0.5f, () =>
+            {
+                Task task = Plugin.WebRequests().ProcessNextRequestAsync();
+                task.RunSynchronously();
+            });
         }
 
         public override void LogWarning(string message)
@@ -58,10 +63,10 @@ namespace Tebex.Adapters
 
         public override void LogDebug(string message)
         {
-            if (PluginConfig.DebugMode)
-            {
-                Logger.Log("[DEBUG]" + message);   
-            }
+            //if (PluginConfig.DebugMode)
+            //{
+                Logger.Log("[DEBUG] " + message);   
+            //}
         }
 
         public override void ReplyPlayer(object player, string message)
@@ -159,7 +164,6 @@ namespace Tebex.Adapters
             TebexApi.ApiErrorCallback onApiError, TebexApi.ServerErrorCallback onServerError)
         {
             var headers = new Dictionary<string, string>();
-            headers.Add("Content-Type", "application/json");
             headers.Add("X-Tebex-Secret", PluginConfig.SecretKey);
             
             Plugin.WebRequests().Enqueue(endpoint, body, (code, response) =>

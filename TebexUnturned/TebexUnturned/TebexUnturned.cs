@@ -37,16 +37,12 @@ namespace Tebex.Plugins
             // Setup our API and adapter
             _adapter = new TebexUnturnedAdapter(this);
             _adapter.LogInfo("Tebex is starting up...");
-            TebexApi.Instance.InitAdapter(_adapter);
-
+            
             // Init plugin components so they have access to our adapter
             _webrequest = new WebRequests(_adapter);
             _timers = new PluginTimers(_adapter);
-            _timers.Every(0.5f, () =>
-            {
-                Task task = _webrequest.ProcessNextRequestAsync();
-                task.RunSynchronously();
-            });
+            
+            TebexApi.Instance.InitAdapter(_adapter);
  
             // Check if auto reporting is disabled and show a warning if so.
             if (!BaseTebexAdapter.PluginConfig.AutoReportingEnabled)

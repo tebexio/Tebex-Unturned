@@ -29,6 +29,11 @@ namespace Tebex.Shared.Components
             _requestQueue.Enqueue(request);
         }
 
+        public int GetNumQueuedRequests()
+        {
+            return _requestQueue.Count;
+        }
+        
         public async Task ProcessNextRequestAsync()
         {
             if (_requestQueue.Count == 0) return;
@@ -48,7 +53,7 @@ namespace Tebex.Shared.Components
 
                 if (!string.IsNullOrEmpty(request.Body) && (request.Method == TebexApi.HttpVerb.POST || request.Method == TebexApi.HttpVerb.PUT))
                 {
-                    webRequest.ContentType = "application/json";
+                    webRequest.Headers.Set("Content-Type", "application/json");
                     using (Stream stream = await Task.Factory.FromAsync(webRequest.BeginGetRequestStream, webRequest.EndGetRequestStream, null))
                     using (StreamWriter writer = new StreamWriter(stream))
                     {
@@ -71,6 +76,7 @@ namespace Tebex.Shared.Components
             }
             catch (Exception ex)
             {
+                _adapter.LogDebug("Error sending request: " + ex.Message);
                 request.Callback?.Invoke(0, $"Request failed: {ex.Message}");
             }
         }
