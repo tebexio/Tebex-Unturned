@@ -14,7 +14,7 @@ namespace TebexUnturned.Commands
 
         public bool RunFromConsole => true;
 
-        public string Name => "tebex:secret";
+        public string Name => "tebex:report";
 
         public string Help => "Force check packages currently waiting to be executed";
         

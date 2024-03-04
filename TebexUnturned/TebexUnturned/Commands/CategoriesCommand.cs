@@ -10,9 +10,9 @@ namespace TebexUnturned.Commands
 
         public bool RunFromConsole => true;
 
-        public string Name => "tebex:secret";
+        public string Name => "tebex:categories";
 
-        public string Help => "Force check packages currently waiting to be executed";
+        public string Help => "Print available package categories.";
         
         public string Syntax => "";
 
