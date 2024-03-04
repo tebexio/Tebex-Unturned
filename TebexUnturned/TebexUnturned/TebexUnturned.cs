@@ -1,14 +1,11 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
+using Rocket.Unturned.Player;
 using Tebex.Adapters;
 using Tebex.API;
 using Tebex.Shared.Components;
-using Tebex.Triage;
 using TebexUnturned;
 
 namespace Tebex.Plugins
@@ -17,10 +14,8 @@ namespace Tebex.Plugins
     {
         private static TebexUnturnedAdapter _adapter;
          
-        private static IPlayerManager players;
         private static PluginTimers _timers;
         private static WebRequests _webrequest;
-        private static IServer server;
         
         public static string GetPluginVersion()
         {
@@ -72,19 +67,9 @@ namespace Tebex.Plugins
             return _webrequest;
         }
 
-        public IPlayerManager PlayerManager()
-        {
-            return players;
-        }
-
         public PluginTimers PluginTimers()
         {
             return _timers;
-        }
-
-        public IServer Server()
-        {
-            return server;
         }
 
         public string GetGame()
@@ -107,18 +92,18 @@ namespace Tebex.Plugins
             Logger.Log(info);
         }
 
-        private void OnUserConnected(IPlayer player)
+        private void OnUserConnected(UnturnedPlayer player)
         {
             // Check for default config and inform the admin that configuration is waiting.
             if (player.IsAdmin && BaseTebexAdapter.PluginConfig.SecretKey == "your-secret-key-here")
             {
-                player.AddChat("Tebex is not configured. Use tebex:secret <secret> from the F1 menu to add your key.");
-                player.AddChat("Get your secret key by logging in at:");
-                player.AddChat("https://tebex.io/");
+                _adapter.ReplyPlayer(player, "Tebex is not configured. Use tebex:secret <secret> from the F1 menu to add your key."); 
+                _adapter.ReplyPlayer(player, "Get your secret key by logging in at:");
+                _adapter.ReplyPlayer(player, "https://tebex.io/");
             }
 
-            _adapter.LogDebug($"Player login event: {player.Id}@{player.Address}");
-            _adapter.OnUserConnected(player.Id, player.Address);
+            _adapter.LogDebug($"Player login event: {player.Id}@{player.IP}");
+            _adapter.OnUserConnected(player.Id, player.IP);
         }
         
         private void OnServerShutdown()
@@ -127,7 +112,7 @@ namespace Tebex.Plugins
             _adapter.ProcessJoinQueue();
         }
 
-        private void PrintCategories(IPlayer player, List<TebexApi.Category> categories)
+        public static void PrintCategories(UnturnedPlayer player, List<TebexApi.Category> categories)
         {
             // Index counter for selecting displayed items
             var categoryIndex = 1;
@@ -171,7 +156,7 @@ namespace Tebex.Plugins
             }
         }
 
-        private static void PrintPackages(IPlayer player, List<TebexApi.Package> packages)
+        public static void PrintPackages(UnturnedPlayer player, List<TebexApi.Package> packages)
         {
             // Index counter for selecting displayed items
             var packIndex = 1;

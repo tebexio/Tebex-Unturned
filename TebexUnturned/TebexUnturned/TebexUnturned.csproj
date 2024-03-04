@@ -84,7 +84,6 @@
         <Compile Include="Shared\BaseTebexAdapter.cs" />
         <Compile Include="Shared\Components\ICommand.cs" />
         <Compile Include="Shared\Components\IPlayer.cs" />
-        <Compile Include="Shared\Components\IPlayerManager.cs" />
         <Compile Include="Shared\Components\IServer.cs" />
         <Compile Include="Shared\Components\PluginTimers.cs" />
         <Compile Include="Shared\Components\WebRequests.cs" />

@@ -6,7 +6,7 @@ namespace TebexUnturned.Commands
 {
     public class HelpCommand : IRocketCommand
     {
-        public new AllowedCaller AllowedCaller => AllowedCaller.Console;
+        public AllowedCaller AllowedCaller => AllowedCaller.Console;
 
         public bool RunFromConsole => true;
 
