@@ -19,13 +19,17 @@ namespace TebexUnturned.Commands
 
         public List<string> Permissions => new List<string>() { "tebex.admin" };
 
-        public void Execute(IRocketPlayer caller, string[] command)
+        public void Execute(IRocketPlayer player, string[] command)
         {
             var _adapter = Tebex.Plugins.TebexUnturned.GetAdapter();
-            
-            if (!caller.HasPermission(Permissions[0]))
+            if (!_adapter.IsReady)
             {
-                _adapter.ReplyPlayer(caller, "You do not have permission to run that command.");
+                _adapter.ReplyPlayer(player, "Tebex is not setup.");
+            }
+
+            if (!player.HasPermission(Permissions[0]))
+            {
+                _adapter.ReplyPlayer(player, "You do not have permission to run that command.");
                 return;
             }
 

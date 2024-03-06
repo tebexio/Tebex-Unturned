@@ -1,14 +1,21 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Rocket.API;
+using Rocket.Core;
+using Rocket.Core.Commands;
+using Rocket.Core.Utils;
 using Rocket.Unturned.Chat;
+using Rocket.Unturned.Extensions;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using Tebex.API;
 using Tebex.Triage;
 using Logger = Rocket.Core.Logging.Logger;
+using Steamworks;
+using Tebex.Shared.Components;
 
 namespace Tebex.Adapters
 {
@@ -44,6 +51,15 @@ namespace Tebex.Adapters
                 Task task = Plugin.WebRequests().ProcessNextRequestAsync();
                 task.RunSynchronously();
             });
+
+            Provider.onServerConnected += id =>
+            {
+                var player = GetPlayerRef(id.ToString());
+                if (player is SteamPlayer)
+                {
+                    Plugin.OnUserConnected((player as SteamPlayer).ToUnturnedPlayer());
+                }
+            };
         }
 
         public override void LogWarning(string message)
@@ -88,12 +104,50 @@ namespace Tebex.Adapters
 
         public override void ExecuteOfflineCommand(TebexApi.Command command, object playerObj, string commandName, string[] args)
         {
-            throw new System.NotImplementedException();
+            //playerObj is always null for offline commands
+            var fullCommand = $"{commandName} {string.Join(" ", args)}";
+            UnturnedPlayer player = (playerObj as SteamPlayer).ToUnturnedPlayer();
+            ConsolePlayer executer = new ConsolePlayer();
+            TaskDispatcher.RunAsync(() =>
+            {
+                if (command.Conditions.Delay > 0)
+                {
+                    Thread.Sleep(command.Conditions.Delay * 1000);
+                }
+                
+                bool success = R.Commands.Execute(executer, fullCommand);
+                if (success)
+                {
+                    ExecutedCommands.Add(command);
+                }
+                else
+                {
+                    LogWarning($"offline command did not succeed for player '{command.Player.Username}': {fullCommand}");
+                }
+            });
         }
 
+        private bool ExecuteServerCommand(TebexApi.Command command, object playerObj, string commandName, string[] args)
+        {
+            var fullCommand = $"{commandName} {string.Join(" ", args)}";
+            UnturnedPlayer player = (playerObj as SteamPlayer).ToUnturnedPlayer();
+            ConsolePlayer executer = new ConsolePlayer();
+            bool success = R.Commands.Execute(executer, fullCommand);
+            if (success)
+            {
+                ExecutedCommands.Add(command);
+            }
+            else
+            {
+                LogWarning($"online command did not succeed for player '{player.SteamPlayer().player.name}': {fullCommand}");
+            }
+
+            return success;
+        }
+        
         public override bool ExecuteOnlineCommand(TebexApi.Command command, object playerObj, string commandName, string[] args)
         {
-            throw new System.NotImplementedException();
+            return ExecuteServerCommand(command, playerObj, commandName, args);
         }
 
         public override bool IsPlayerOnline(string playerRefId)

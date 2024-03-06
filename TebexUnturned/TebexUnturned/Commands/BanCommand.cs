@@ -25,19 +25,25 @@ namespace TebexUnturned.Commands
         public void Execute(IRocketPlayer commandRunner, string[] args)
         {
             var _adapter = Tebex.Plugins.TebexUnturned.GetAdapter();
-            
+            if (!_adapter.IsReady)
+            {
+                _adapter.ReplyPlayer(commandRunner, "Tebex is not setup.");
+            }
+
             if (!commandRunner.HasPermission(Permissions[0]))
             {
                 _adapter.ReplyPlayer(commandRunner, $"Ban can only be used by administrators.");
                 return;
             }
 
-            if (args.Length < 2)
+            string reason = "";
+            if (args.Length == 0)
             {
-                _adapter.ReplyPlayer(commandRunner, $"Usage: tebex.ban <playerName> <reason>");
+                _adapter.ReplyPlayer(commandRunner, $"Usage: tebex.ban <playerName> <optional:reason>");
                 return;
             }
-
+            
+            if (args.Length == 2) reason = args[1];
             var foundTargetPlayer = _adapter.GetPlayerRef(args[0].Trim()) as SteamPlayer;
             if (foundTargetPlayer == null)
             {
@@ -45,7 +51,7 @@ namespace TebexUnturned.Commands
                 return;
             }
 
-            var reason = string.Join(" ", args.Skip(1));
+            reason = string.Join(" ", args.Skip(1));
             _adapter.ReplyPlayer(commandRunner, $"Processing ban for player {foundTargetPlayer.playerID.playerName} with reason '{reason}'");
             _adapter.BanPlayer(foundTargetPlayer.playerID.playerName, foundTargetPlayer.getAddressString(false), reason,
                 (code, body) => { _adapter.ReplyPlayer(commandRunner, "Player banned successfully."); },

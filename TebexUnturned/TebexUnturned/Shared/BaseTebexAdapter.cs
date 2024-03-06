@@ -30,6 +30,9 @@ namespace Tebex.Adapters
 
         /** Allow pausing all web requests if rate limits are received from remote */
         protected bool IsRateLimited = false;
+     
+        /** Is secret key set and connection to Tebex made? */
+        public bool IsReady { get; private set; }
         
         public abstract void Init();
 
@@ -204,6 +207,7 @@ namespace Tebex.Adapters
 
                     Cache.Instance.Set("information", new CachedObject(storeInfo, PluginConfig.CacheLifetime));
                     response?.Invoke(storeInfo);
+                    IsReady = true;
                 });
             }
         }

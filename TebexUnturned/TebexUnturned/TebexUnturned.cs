@@ -92,7 +92,7 @@ namespace Tebex.Plugins
             Logger.Log(info);
         }
 
-        private void OnUserConnected(UnturnedPlayer player)
+        public void OnUserConnected(UnturnedPlayer player)
         {
             // Check for default config and inform the admin that configuration is waiting.
             if (player.IsAdmin && BaseTebexAdapter.PluginConfig.SecretKey == "your-secret-key-here")

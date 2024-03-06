@@ -57,6 +57,13 @@ namespace Tebex.Shared.Components
                     using (Stream stream = await Task.Factory.FromAsync(webRequest.BeginGetRequestStream, webRequest.EndGetRequestStream, null))
                     using (StreamWriter writer = new StreamWriter(stream))
                     {
+                        var logOutStr = $"-> {request.Method.ToString()} {request.Url} | {request.Body}";
+            
+                        _adapter.LogDebug(logOutStr); // Write the full output entry to a debug log
+                        if (logOutStr.Length > 256) // Limit any sent size of an output string to 256 characters, to prevent sending too much data
+                        {
+                            logOutStr = logOutStr.Substring(0, 251) + "[...]";
+                        }
                         await writer.WriteAsync(request.Body);
                     }
                 }
