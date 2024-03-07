@@ -24,6 +24,15 @@ namespace Tebex.Plugins
 
         protected override void Load()
         {
+            // Load configuration
+            base.Load();
+            
+            // Sync configuration to BaseTebexAdapter model
+            BaseTebexAdapter.PluginConfig.SecretKey = Configuration.Instance.SecretKey;
+            BaseTebexAdapter.PluginConfig.AutoReportingEnabled = Configuration.Instance.AutoReportingEnabled;
+            BaseTebexAdapter.PluginConfig.CacheLifetime = Configuration.Instance.CacheLifetime;
+            BaseTebexAdapter.PluginConfig.DebugMode = Configuration.Instance.DebugMode;
+            
             Init();
         }
 
