@@ -53,7 +53,7 @@ namespace Tebex.Shared.Components
 
                 if (!string.IsNullOrEmpty(request.Body) && (request.Method == TebexApi.HttpVerb.POST || request.Method == TebexApi.HttpVerb.PUT))
                 {
-                    webRequest.Headers.Set("Content-Type", "application/json");
+                    webRequest.ContentType = "application/json";
                     using (Stream stream = await Task.Factory.FromAsync(webRequest.BeginGetRequestStream, webRequest.EndGetRequestStream, null))
                     using (StreamWriter writer = new StreamWriter(stream))
                     {
