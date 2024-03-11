@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -79,10 +80,10 @@ namespace Tebex.Adapters
 
         public override void LogDebug(string message)
         {
-            //if (PluginConfig.DebugMode)
-            //{
+            if (PluginConfig.DebugMode)
+            {
                 Logger.Log("[DEBUG] " + message);   
-            //}
+            }
         }
 
         public override void ReplyPlayer(object player, string message)
@@ -285,7 +286,11 @@ namespace Tebex.Adapters
 
         public override TebexTriage.AutoTriageEvent FillAutoTriageParameters(TebexTriage.AutoTriageEvent partialEvent)
         {
-            throw new System.NotImplementedException();
+            partialEvent.GameId = Plugin.GetGame();
+            partialEvent.FrameworkId = "RocketMod/LGM";
+            partialEvent.PluginVersion = Plugins.TebexUnturned.GetPluginVersion();
+            partialEvent.ServerIp = new IPAddress(Provider.ip).ToString();
+            return partialEvent;
         }
     }
 }
