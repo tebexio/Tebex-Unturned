@@ -10,17 +10,17 @@ namespace TebexUnturned.Commands
 {
     public class ReportCommand : IRocketCommand
     {
-        public AllowedCaller AllowedCaller => AllowedCaller.Console;
+        public AllowedCaller AllowedCaller => AllowedCaller.Both;
 
         public bool RunFromConsole => true;
 
         public string Name => "tebex:report";
 
-        public string Help => "Force check packages currently waiting to be executed";
+        public string Help => "Sends a technical issue report to Tebex";
         
-        public string Syntax => "";
+        public string Syntax => "tebex:report confirm <message>";
 
-        public List<string> Aliases => new List<string>();
+        public List<string> Aliases => new List<string>() { "tebex.report" };
 
         public List<string> Permissions => new List<string>() { "tebex.admin" };
 

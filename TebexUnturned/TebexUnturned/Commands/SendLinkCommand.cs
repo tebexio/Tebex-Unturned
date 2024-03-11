@@ -6,17 +6,17 @@ namespace TebexUnturned.Commands
 {
     public class SendLinkCommand : IRocketCommand
     {
-        public AllowedCaller AllowedCaller => AllowedCaller.Console;
+        public AllowedCaller AllowedCaller => AllowedCaller.Both;
 
         public bool RunFromConsole => true;
 
         public string Name => "tebex:sendlink";
 
-        public string Help => "Force check packages currently waiting to be executed";
+        public string Help => "Sends a package's checkout link to a player's chat.";
         
         public string Syntax => "";
 
-        public List<string> Aliases => new List<string>();
+        public List<string> Aliases => new List<string>() {"tebex.sendlink"};
 
         public List<string> Permissions => new List<string>() { "tebex.admin" };
 

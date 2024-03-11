@@ -118,6 +118,9 @@ namespace Tebex.Adapters
             //public bool AllowGui = false;
             public string SecretKey = "your-secret-key-here";
             public int CacheLifetime = 30;
+
+            public string CustomBuyCommand = "";
+            public bool BuyEnabled = true;
             
             public void LoadDefaults()
             {

@@ -13,7 +13,7 @@ namespace TebexUnturned.Commands
 
         public string Name => "tebex:debug";
 
-        public string Help => "Force check packages currently waiting to be executed";
+        public string Help => "Toggles more in-depth logging for the Tebex plugin";
         
         public string Syntax => "<on/true/off/false>";
 

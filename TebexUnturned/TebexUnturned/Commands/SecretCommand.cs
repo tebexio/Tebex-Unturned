@@ -25,16 +25,15 @@ namespace TebexUnturned.Commands
         public void Execute(IRocketPlayer player, string[] args)
         {
             var _adapter = Tebex.Plugins.TebexUnturned.GetAdapter();
-            if (!_adapter.IsReady)
-            {
-                _adapter.ReplyPlayer(player, "Tebex is not setup.");
-            }
 
             // Secret can only be ran as the admin
             if (!player.HasPermission(Permissions[0]))
             {
                 _adapter.ReplyPlayer(player, "You do not have permission to run this command.");
-                _adapter.ReplyPlayer(player, "If you are an admin, grant permission to use `tebex.secret`");
+                if (player.IsAdmin)
+                {
+                    _adapter.ReplyPlayer(player, "- You must grant the `tebex.admin` permission to your player character");    
+                }
                 return;
             }
 
@@ -46,7 +45,6 @@ namespace TebexUnturned.Commands
 
             _adapter.ReplyPlayer(player, "Setting your secret key...");
             BaseTebexAdapter.PluginConfig.SecretKey = args[0];
-            //Config.WriteObject(BaseTebexAdapter.PluginConfig); FIXME
 
             // Reset store info so that we don't fetch from the cache
             BaseTebexAdapter.Cache.Instance.Remove("information");

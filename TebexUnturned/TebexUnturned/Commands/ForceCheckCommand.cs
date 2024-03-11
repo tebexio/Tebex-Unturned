@@ -5,7 +5,7 @@ namespace TebexUnturned.Commands
 {
     public class ForceCheckCommand : IRocketCommand
     {
-        public AllowedCaller AllowedCaller => AllowedCaller.Console;
+        public AllowedCaller AllowedCaller => AllowedCaller.Both;
 
         public bool RunFromConsole => true;
 
@@ -15,7 +15,7 @@ namespace TebexUnturned.Commands
         
         public string Syntax => "";
 
-        public List<string> Aliases => new List<string>();
+        public List<string> Aliases => new List<string>() { "tebex.forcecheck" };
 
         public List<string> Permissions => new List<string>() { "tebex.admin" };
 

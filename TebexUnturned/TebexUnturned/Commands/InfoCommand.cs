@@ -6,7 +6,7 @@ namespace TebexUnturned.Commands
 {
     public class InfoCommand : IRocketCommand
     {
-        public AllowedCaller AllowedCaller => AllowedCaller.Console;
+        public AllowedCaller AllowedCaller => AllowedCaller.Both;
 
         public bool RunFromConsole => true;
 
@@ -18,7 +18,7 @@ namespace TebexUnturned.Commands
 
         public List<string> Aliases => new List<string>();
 
-        public List<string> Permissions => new List<string>() { "tebex.admin" };
+        public List<string> Permissions => new List<string>() { };
 
         public void Execute(IRocketPlayer player, string[] args)
         {
@@ -27,13 +27,7 @@ namespace TebexUnturned.Commands
             {
                 _adapter.ReplyPlayer(player, "Tebex is not setup.");
             }
-
-            if (!player.HasPermission(Permissions[0]))
-            {
-                _adapter.ReplyPlayer(player, "You do not have permission to run that command.");
-                return;
-            }
-
+            
             _adapter.ReplyPlayer(player, "Getting store information...");
             _adapter.FetchStoreInfo(info =>
             {

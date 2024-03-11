@@ -32,7 +32,8 @@ namespace Tebex.Plugins
             BaseTebexAdapter.PluginConfig.AutoReportingEnabled = Configuration.Instance.AutoReportingEnabled;
             BaseTebexAdapter.PluginConfig.CacheLifetime = Configuration.Instance.CacheLifetime;
             BaseTebexAdapter.PluginConfig.DebugMode = Configuration.Instance.DebugMode;
-            
+            BaseTebexAdapter.PluginConfig.CustomBuyCommand = Configuration.Instance.CustomBuyCommand; // custom buy command from legacy plugin
+            BaseTebexAdapter.PluginConfig.BuyEnabled = Configuration.Instance.BuyEnabled; // custom buy enabled setting from legacy plugin
             Init();
         }
 

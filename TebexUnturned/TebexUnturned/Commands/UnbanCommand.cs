@@ -15,7 +15,7 @@ namespace TebexUnturned.Commands
         
         public string Syntax => "";
 
-        public List<string> Aliases => new List<string>();
+        public List<string> Aliases => new List<string>() { "tebex.unban"};
 
         public List<string> Permissions => new List<string>() { "tebex.admin" };
 
@@ -33,6 +33,7 @@ namespace TebexUnturned.Commands
                 return;
             }
 
+            //TODO
             _adapter.ReplyPlayer(commandRunner, $"You must unban players via your webstore.");
         }
     }
