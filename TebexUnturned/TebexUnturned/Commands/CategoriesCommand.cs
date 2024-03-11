@@ -34,7 +34,7 @@ namespace TebexUnturned.Commands
                 return;
             }
 
-            _adapter.GetCategories(categories => { Tebex.Plugins.TebexUnturned.PrintCategories(commandRunner as UnturnedPlayer, categories); });
+            _adapter.GetCategories(categories => { Tebex.Plugins.TebexUnturned.PrintCategories(commandRunner, categories); });
         }
     }
 }

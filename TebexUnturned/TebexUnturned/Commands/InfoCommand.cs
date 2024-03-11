@@ -16,7 +16,7 @@ namespace TebexUnturned.Commands
         
         public string Syntax => "";
 
-        public List<string> Aliases => new List<string>();
+        public List<string> Aliases => new List<string>() { "tebex.info"};
 
         public List<string> Permissions => new List<string>() { };
 

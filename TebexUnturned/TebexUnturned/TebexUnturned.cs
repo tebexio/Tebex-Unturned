@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Rocket.API;
 using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
 using Rocket.Unturned.Player;
@@ -122,7 +123,7 @@ namespace Tebex.Plugins
             _adapter.ProcessJoinQueue();
         }
 
-        public static void PrintCategories(UnturnedPlayer player, List<TebexApi.Category> categories)
+        public static void PrintCategories(IRocketPlayer player, List<TebexApi.Category> categories)
         {
             // Index counter for selecting displayed items
             var categoryIndex = 1;
@@ -166,7 +167,7 @@ namespace Tebex.Plugins
             }
         }
 
-        public static void PrintPackages(UnturnedPlayer player, List<TebexApi.Package> packages)
+        public static void PrintPackages(IRocketPlayer player, List<TebexApi.Package> packages)
         {
             // Index counter for selecting displayed items
             var packIndex = 1;

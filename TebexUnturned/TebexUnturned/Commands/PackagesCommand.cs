@@ -34,7 +34,7 @@ namespace TebexUnturned.Commands
                 return;
             }
 
-            _adapter.GetPackages(packages => { Tebex.Plugins.TebexUnturned.PrintPackages(commandRunner as UnturnedPlayer, packages); });
+            _adapter.GetPackages(packages => { Tebex.Plugins.TebexUnturned.PrintPackages(commandRunner, packages); });
         }
     }
 }
