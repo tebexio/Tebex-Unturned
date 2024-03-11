@@ -26,11 +26,6 @@ namespace TebexUnturned.Commands
             if (!_adapter.IsReady)
             {
                 _adapter.ReplyPlayer(commandRunner, "Tebex is not setup.");
-            }
-
-            if (!commandRunner.HasPermission(Permissions[0]))
-            {
-                _adapter.ReplyPlayer(commandRunner, "You do not have permission to run that command.");
                 return;
             }
 

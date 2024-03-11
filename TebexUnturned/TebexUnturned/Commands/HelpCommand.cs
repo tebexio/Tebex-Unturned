@@ -25,10 +25,6 @@ namespace TebexUnturned.Commands
         public void Execute(IRocketPlayer player, string[] command)
         {
             var _adapter = Tebex.Plugins.TebexUnturned.GetAdapter();
-            if (!_adapter.IsReady)
-            {
-                _adapter.ReplyPlayer(player, "Tebex is not setup.");
-            }
 
             _adapter.ReplyPlayer(player, "Tebex Commands Available:");
             if (player.IsAdmin || player.HasPermission("tebex:admin")) //Always show help to admins regardless of perms, for new server owners

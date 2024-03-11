@@ -26,6 +26,7 @@ namespace TebexUnturned.Commands
             if (!_adapter.IsReady)
             {
                 _adapter.ReplyPlayer(commandRunner, "Tebex is not setup.");
+                return;
             }
 
             if (!commandRunner.HasPermission("tebex.sendlink"))

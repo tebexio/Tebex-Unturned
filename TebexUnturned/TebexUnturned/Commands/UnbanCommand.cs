@@ -25,6 +25,7 @@ namespace TebexUnturned.Commands
             if (!_adapter.IsReady)
             {
                 _adapter.ReplyPlayer(commandRunner, "Tebex is not setup.");
+                return;
             }
 
             if (!commandRunner.IsAdmin)
@@ -32,8 +33,7 @@ namespace TebexUnturned.Commands
                 _adapter.ReplyPlayer(commandRunner, $"/tebex:unban can only be used by administrators.");
                 return;
             }
-
-            //TODO
+            
             _adapter.ReplyPlayer(commandRunner, $"You must unban players via your webstore.");
         }
     }

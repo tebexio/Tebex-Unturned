@@ -26,6 +26,7 @@ namespace TebexUnturned.Commands
             if (!_adapter.IsReady)
             {
                 _adapter.ReplyPlayer(player, "Tebex is not setup.");
+                return;
             }
             
             _adapter.ReplyPlayer(player, "Getting store information...");
