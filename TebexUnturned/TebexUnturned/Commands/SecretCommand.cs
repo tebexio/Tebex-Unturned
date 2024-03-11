@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using Rocket.API;
 using Tebex.Adapters;
@@ -24,7 +25,7 @@ namespace TebexUnturned.Commands
 
         public void Execute(IRocketPlayer player, string[] args)
         {
-            var _adapter = Tebex.Plugins.TebexUnturned.GetAdapter();
+            var _adapter = Tebex.Plugins.TebexUnturned.GetAdapter() as TebexUnturnedAdapter;
 
             // Secret can only be ran as the admin
             if (!player.HasPermission(Permissions[0]))
@@ -45,10 +46,11 @@ namespace TebexUnturned.Commands
 
             _adapter.ReplyPlayer(player, "Setting your secret key...");
             BaseTebexAdapter.PluginConfig.SecretKey = args[0];
+            _adapter.SaveConfiguration();
 
             // Reset store info so that we don't fetch from the cache
             BaseTebexAdapter.Cache.Instance.Remove("information");
-
+            
             // Any failure to set secret key is logged to console automatically
             _adapter.FetchStoreInfo(info =>
             {

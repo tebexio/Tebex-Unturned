@@ -329,5 +329,10 @@ namespace Tebex.Adapters
             partialEvent.ServerIp = new IPAddress(Provider.ip).ToString();
             return partialEvent;
         }
+
+        public void SaveConfiguration()
+        {
+            Plugin.SaveConfiguration();
+        }
     }
 }

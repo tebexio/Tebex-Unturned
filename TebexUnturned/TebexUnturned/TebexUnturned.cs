@@ -213,5 +213,10 @@ namespace Tebex.Plugins
         {
             return _adapter;
         }
+
+        public void SaveConfiguration()
+        {
+            Configuration.Save();
+        }
     }
 }
