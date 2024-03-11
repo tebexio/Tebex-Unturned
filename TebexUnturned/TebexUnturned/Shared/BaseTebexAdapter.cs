@@ -621,12 +621,12 @@ namespace Tebex.Adapters
 
         public void GetGiftCards(GetGiftCardsResponse success, TebexApi.ApiErrorCallback error)
         {
-            //TODO
+            throw new NotImplementedException();
         }
 
         public void GetGiftCardById(GetGiftCardByIdResponse success, TebexApi.ApiErrorCallback error)
         {
-            //TODO
+            throw new NotImplementedException();
         }
 
         public void BanPlayer(string playerName, string playerIp, string reason, TebexApi.ApiSuccessCallback onSuccess,

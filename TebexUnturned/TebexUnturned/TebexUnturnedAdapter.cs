@@ -245,25 +245,62 @@ namespace Tebex.Adapters
                 }
                 else if (code == 500)
                 {
-                    //TODO triage report
+                    ReportAutoTriageEvent(TebexTriage.CreateAutoTriageEvent("Internal server error from Plugin API",
+                        new Dictionary<string, string>
+                        {
+                            { "request", body },
+                            { "response", response },
+                        }));
+                    LogDebug(
+                        "Internal Server Error from Tebex API. Please try again later. Error details follow below.");
+                    LogDebug(response);
                     onServerError?.Invoke(code, response);
                 }
                 else if (code == 530) // cloudflare origin error
                 {
-                    //TODO triage report
+                    LogDebug("CDN reported error code, web request not completed: " + code);
+                    LogDebug(response);
                     onServerError?.Invoke(code, response);
                 }
                 else if (code == 0) // timeout or cancelled
                 {
-                    //TODO
+                    ReportAutoTriageEvent(TebexTriage.CreateAutoTriageEvent("Request timeout to Plugin API",
+                        new Dictionary<string, string>
+                        {
+                            { "request", body },
+                            { "response", response },
+                        }));
+                    LogDebug("Request Timeout from Tebex API. Please try again later.");
                 }
                 else // response is a general failure error message in a json formatted response from the api
                 {
-                    //TODO on api error
-                    
                     try
                     {
-                        // TODO
+                        var error = JsonConvert.DeserializeObject<TebexApi.TebexError>(response);
+                        if (error != null)
+                        {
+                            ReportAutoTriageEvent(TebexTriage.CreateAutoTriageEvent(
+                                "Plugin API reported general failure", new Dictionary<string, string>
+                                {
+                                    { "request", body },
+                                    { "error", error.ErrorMessage },
+                                }));
+                            onApiError?.Invoke(error);
+                        }
+                        else
+                        {
+                            ReportAutoTriageEvent(TebexTriage.CreateAutoTriageEvent(
+                                "Plugin API error could not be interpreted!", new Dictionary<string, string>
+                                {
+                                    { "request", body },
+                                    { "response", response },
+                                }));
+                            LogDebug($"Failed to unmarshal an expected error response from API.");
+                            onServerError?.Invoke(code, response);
+                        }
+
+                        LogDebug($"Request to {endpoint} failed with code {code}.");
+                        LogDebug(response);
                     }
                     catch (Exception e) // something really unexpected with our response, it's likely not JSON
                     {

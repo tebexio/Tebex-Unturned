@@ -166,7 +166,7 @@ namespace Tebex.API
 
             [JsonProperty("servers")] public List<TebexServerInfo> Servers { get; set; }
 
-            [JsonProperty("required_packages")] public List<object> RequiredPackages { get; set; } //TODO
+            [JsonProperty("required_packages")] public List<object> RequiredPackages { get; set; }
 
             [JsonProperty("require_any")] public bool RequireAny { get; set; }
 
@@ -539,7 +539,7 @@ namespace Tebex.API
 
         public class GiftCard
         {
-            //TODO            
+                        
         }
 
         public void GetAllGiftCards(ApiSuccessCallback onSuccess = null, ApiErrorCallback onApiError = null,
@@ -705,8 +705,7 @@ namespace Tebex.API
         public class PlayerInfo
         {
             [JsonProperty("id")] public string Id { get; set; }
-
-            //FIXME sometimes referred to as `name` or `username` alternatively?
+            
             [JsonProperty("name")] public string Username { get; set; }
 
             [JsonProperty("meta")] public OnlineCommandPlayerMeta Meta { get; set; }
