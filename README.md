@@ -1,7 +1,7 @@
 # Tebex Unturned Plugin (LDM / RocketMod)
 ![Static Badge](https://img.shields.io/badge/LDM-4.9.3.15-brightgreen)
 
-## Description
+## What is Tebex?
 [Tebex](https://tebex.io/) provides a monetization and donation platform for game servers, allowing server owners to manage in-game purchases, subscriptions, and donations with ease.
 
 This plugin allows you to fulfill purchases on your Unturned server, enabling you to offer a wide range of virtual items, packages, and services to your players.
