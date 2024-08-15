@@ -107,7 +107,7 @@ namespace Tebex.Adapters
         {
             //playerObj is always null for offline commands
             var fullCommand = $"{commandName} {string.Join(" ", args)}";
-            UnturnedPlayer player = (playerObj as SteamPlayer).ToUnturnedPlayer();
+            //UnturnedPlayer player = (playerObj as SteamPlayer).ToUnturnedPlayer();
             ConsolePlayer executer = new ConsolePlayer();
             TaskDispatcher.RunAsync(() =>
             {

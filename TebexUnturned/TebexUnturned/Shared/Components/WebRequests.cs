@@ -51,40 +51,68 @@ namespace Tebex.Shared.Components
                     webRequest.Headers[header.Key] = header.Value;
                 }
 
-                if (!string.IsNullOrEmpty(request.Body) && (request.Method == TebexApi.HttpVerb.POST || request.Method == TebexApi.HttpVerb.PUT))
+                if (!string.IsNullOrEmpty(request.Body) && (request.Method == TebexApi.HttpVerb.POST ||
+                                                            request.Method == TebexApi.HttpVerb.PUT || request.Method == TebexApi.HttpVerb.DELETE))
                 {
                     webRequest.ContentType = "application/json";
-                    using (Stream stream = await Task.Factory.FromAsync(webRequest.BeginGetRequestStream, webRequest.EndGetRequestStream, null))
+                    using (Stream stream = await Task.Factory.FromAsync(webRequest.BeginGetRequestStream,
+                               webRequest.EndGetRequestStream, null))
                     using (StreamWriter writer = new StreamWriter(stream))
                     {
                         var logOutStr = $"-> {request.Method.ToString()} {request.Url} | {request.Body}";
-            
+
                         _adapter.LogDebug(logOutStr); // Write the full output entry to a debug log
-                        if (logOutStr.Length > 256) // Limit any sent size of an output string to 256 characters, to prevent sending too much data
+                        if (logOutStr.Length >
+                            256) // Limit any sent size of an output string to 256 characters, to prevent sending too much data
                         {
                             logOutStr = logOutStr.Substring(0, 251) + "[...]";
                         }
+
                         await writer.WriteAsync(request.Body);
                     }
                 }
 
-                using (WebResponse response = await Task.Factory.FromAsync(webRequest.BeginGetResponse, webRequest.EndGetResponse, null))
+                using (WebResponse response =
+                       await Task.Factory.FromAsync(webRequest.BeginGetResponse, webRequest.EndGetResponse, null))
                 using (Stream responseStream = response.GetResponseStream())
                 using (StreamReader reader = new StreamReader(responseStream))
                 {
                     string responseBody = await reader.ReadToEndAsync();
-                    var truncatedResponse = responseBody.Length > 256 ? responseBody.Substring(0, 251) + "[...]" : responseBody;
+                    var truncatedResponse = responseBody.Length > 256
+                        ? responseBody.Substring(0, 251) + "[...]"
+                        : responseBody;
 
-                    var logInStr = $"{((HttpWebResponse)response).StatusCode} | '{truncatedResponse}' <- {request.Method.ToString()} {request.Url}";
+                    var logInStr =
+                        $"{((HttpWebResponse)response).StatusCode} | '{truncatedResponse}' <- {request.Method.ToString()} {request.Url}";
                     _adapter.LogDebug(logInStr);
 
                     request.Callback?.Invoke((int)((HttpWebResponse)response).StatusCode, responseBody);
                 }
             }
+            catch (WebException webEx)
+            {
+                using (Stream responseStream = webEx.Response.GetResponseStream())
+                using (StreamReader reader = new StreamReader(responseStream))
+                {
+                    string responseBody = await reader.ReadToEndAsync();
+                    var truncatedResponse = responseBody.Length > 256
+                        ? responseBody.Substring(0, 251) + "[...]"
+                        : responseBody;
+
+                    var logInStr =
+                        $"{((HttpWebResponse)webEx.Response).StatusCode} | '{truncatedResponse}' <- {request.Method.ToString()} {request.Url}";
+                    _adapter.LogDebug(logInStr);
+
+                    request.Callback?.Invoke((int)((HttpWebResponse)webEx.Response).StatusCode, responseBody);
+                }
+            }
             catch (Exception ex)
             {
-                _adapter.LogDebug("Error sending request: " + ex.Message);
-                request.Callback?.Invoke(0, $"Request failed: {ex.Message}");
+                _adapter.LogDebug($"Error sending request {request.Url}: " + ex.Message);
+                _adapter.LogDebug($"- Exception: " + ex.ToString());
+                _adapter.LogDebug($"- Type " + ex.GetType().ToString());
+                _adapter.LogDebug($"- Request body " + request.Body);
+                request.Callback?.Invoke(0, request.Body);
             }
         }
     }
