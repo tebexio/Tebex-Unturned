@@ -103,47 +103,60 @@ namespace Tebex.Adapters
             }
         }
 
-        public override void ExecuteOfflineCommand(TebexApi.Command command, object playerObj, string commandName, string[] args)
+        public override bool ExecuteOfflineCommand(TebexApi.Command command, object playerObj, string commandName, string[] args)
         {
+            var serverCommandTaskCompletionSource = new TaskCompletionSource<bool>();
+            
             //playerObj is always null for offline commands
             var fullCommand = $"{commandName} {string.Join(" ", args)}";
             //UnturnedPlayer player = (playerObj as SteamPlayer).ToUnturnedPlayer();
             ConsolePlayer executer = new ConsolePlayer();
-            TaskDispatcher.RunAsync(() =>
+            TaskDispatcher.QueueOnMainThread(() =>
             {
                 if (command.Conditions.Delay > 0)
                 {
                     Thread.Sleep(command.Conditions.Delay * 1000);
                 }
                 
+                // Rocket seems to return success only if the command is found, but not necessarily if it successfully executed.
                 bool success = R.Commands.Execute(executer, fullCommand);
                 if (success)
                 {
-                    ExecutedCommands.Add(command);
+                    serverCommandTaskCompletionSource.SetResult(true);
                 }
                 else
                 {
                     LogWarning($"offline command did not succeed for player '{command.Player.Username}': {fullCommand}");
+                    serverCommandTaskCompletionSource.SetResult(false);
                 }
             });
+            serverCommandTaskCompletionSource.Task.Wait();
+            return serverCommandTaskCompletionSource.Task.Result;
         }
 
         private bool ExecuteServerCommand(TebexApi.Command command, object playerObj, string commandName, string[] args)
         {
+            var serverCommandTaskCompletionSource = new TaskCompletionSource<bool>();
             var fullCommand = $"{commandName} {string.Join(" ", args)}";
             UnturnedPlayer player = (playerObj as SteamPlayer).ToUnturnedPlayer();
             ConsolePlayer executer = new ConsolePlayer();
-            bool success = R.Commands.Execute(executer, fullCommand);
-            if (success)
+            var commandFound = false;
+            TaskDispatcher.QueueOnMainThread(() =>
             {
-                ExecutedCommands.Add(command);
-            }
-            else
-            {
-                LogWarning($"online command did not succeed for player '{player.SteamPlayer().player.name}': {fullCommand}");
-            }
-
-            return success;
+                // Rocket seems to return success only if the command is found, but not necessarily if it successfully executed.
+                commandFound = R.Commands.Execute(executer, fullCommand);
+                if (commandFound)
+                {
+                    serverCommandTaskCompletionSource.SetResult(true);
+                }
+                else
+                {
+                    serverCommandTaskCompletionSource.SetResult(false);
+                    LogWarning($"online command did not succeed for player '{player.SteamPlayer().player.name}': {fullCommand}");
+                }
+            });
+            serverCommandTaskCompletionSource.Task.Wait();
+            return serverCommandTaskCompletionSource.Task.Result;
         }
         
         public override bool ExecuteOnlineCommand(TebexApi.Command command, object playerObj, string commandName, string[] args)

@@ -489,8 +489,16 @@ namespace Tebex.Adapters
                             var args = splitCommand.Skip(1);
                             
                             LogDebug($"Executing offline command: `{parsedCommand}`");
-                            ExecuteOfflineCommand(command, null, commandName, args.ToArray());
-                            //ExecutedCommands.Add(command); added by override
+                            var success = ExecuteOfflineCommand(command, null, commandName, args.ToArray());
+                            if (success)
+                            {
+                                ExecutedCommands.Add(command);    
+                            }
+                            else
+                            {
+                                LogWarning($"Failed to run offline command {parsedCommand} for player {command.Player.Username}.");
+                            }
+                            
                             LogDebug($"Executed commands queue has {ExecutedCommands.Count} commands");
                         }
                     }, (error) =>
@@ -565,7 +573,7 @@ namespace Tebex.Adapters
                                 
                                 LogDebug($"Pre-execution: {parsedCommand}");
                                 var success = ExecuteOnlineCommand(command, playerRef, commandName, args.ToArray());
-                                LogDebug($"Post-execution: {parsedCommand}");
+                                LogDebug($"Post-execution (success: {success}): {parsedCommand}");
                                 if (success)
                                 {
                                     ExecutedCommands.Add(command);    
@@ -652,7 +660,7 @@ namespace Tebex.Adapters
          */
         public abstract void ReplyPlayer(object player, string message);
 
-        public abstract void ExecuteOfflineCommand(TebexApi.Command command, object playerObj, string commandName, string[] args);
+        public abstract bool ExecuteOfflineCommand(TebexApi.Command command, object playerObj, string commandName, string[] args);
         public abstract bool ExecuteOnlineCommand(TebexApi.Command command, object playerObj, string commandName, string[] args);
         
         public abstract bool IsPlayerOnline(string playerRefId);
