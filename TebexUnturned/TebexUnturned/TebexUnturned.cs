@@ -110,7 +110,7 @@ namespace Tebex.Plugins
             // Check for default config and inform the admin that configuration is waiting.
             if (player.IsAdmin && BaseTebexAdapter.PluginConfig.SecretKey == "your-secret-key-here")
             {
-                _adapter.ReplyPlayer(player, "Tebex is not configured. Use tebex:secret <secret> from the F1 menu to add your key."); 
+                _adapter.ReplyPlayer(player, "Tebex is not configured. Use command tebex:secret <secret> to add your key."); 
                 _adapter.ReplyPlayer(player, "Get your secret key by logging in at:");
                 _adapter.ReplyPlayer(player, "https://tebex.io/");
             }
