@@ -218,6 +218,11 @@ namespace Tebex.Plugins
 
         public void SaveConfiguration()
         {
+            Configuration.Instance.CacheLifetime = Configuration.Instance.CacheLifetime;
+            Configuration.Instance.BuyEnabled = Configuration.Instance.BuyEnabled;
+            Configuration.Instance.SecretKey = Configuration.Instance.SecretKey;
+            Configuration.Instance.DebugMode = Configuration.Instance.DebugMode;
+            Configuration.Instance.CustomBuyCommand = Configuration.Instance.CustomBuyCommand;
             Configuration.Save();
         }
     }
