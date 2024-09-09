@@ -66,6 +66,7 @@
         </Reference>
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Ansi.cs" />
         <Compile Include="Commands\BanCommand.cs" />
         <Compile Include="Commands\BuyCommand.cs" />
         <Compile Include="Commands\CategoriesCommand.cs" />
@@ -77,10 +78,11 @@
         <Compile Include="Commands\LookupCommand.cs" />
         <Compile Include="Commands\PackagesCommand.cs" />
         <Compile Include="Commands\RefreshCommand.cs" />
-        <Compile Include="Commands\ReportCommand.cs" />
         <Compile Include="Commands\SecretCommand.cs" />
         <Compile Include="Commands\SendLinkCommand.cs" />
         <Compile Include="Commands\UnbanCommand.cs" />
+        <Compile Include="Intent.cs" />
+        <Compile Include="PluginEvent.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
         <Compile Include="Shared\BaseTebexAdapter.cs" />
         <Compile Include="Shared\Components\IServer.cs" />
@@ -88,6 +90,8 @@
         <Compile Include="Shared\Components\WebRequests.cs" />
         <Compile Include="Shared\TebexApi.cs" />
         <Compile Include="Shared\TebexTriage.cs" />
+        <Compile Include="TebexPlatform.cs" />
+        <Compile Include="TebexTelemetry.cs" />
         <Compile Include="TebexUnturned.cs" />
         <Compile Include="TebexUnturnedAdapter.cs" />
         <Compile Include="UnturnedChatListener.cs" />

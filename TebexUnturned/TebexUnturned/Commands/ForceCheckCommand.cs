@@ -22,7 +22,7 @@ namespace TebexUnturned.Commands
         public void Execute(IRocketPlayer player, string[] command)
         {
             var _adapter = Tebex.Plugins.TebexUnturned.GetAdapter();
-            if (!_adapter.IsReady)
+            if (!_adapter.IsTebexReady())
             {
                 _adapter.ReplyPlayer(player, "Tebex is not setup.");
                 return;

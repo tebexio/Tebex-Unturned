@@ -63,14 +63,50 @@ namespace Tebex.Adapters
             };
         }
 
-        public override void LogWarning(string message)
+        public override void SaveConfig(TebexConfig config)
+        {
+            Plugin.SaveConfiguration();
+        }
+
+        public override void LogWarning(string message, string solution)
         {
             Logger.LogWarning(message);
+            Logger.LogWarning(solution);
+            
+            if (PluginConfig.AutoReportingEnabled)
+            {
+                new PluginEvent(Plugin, Plugin.GetPlatform(), EnumEventLevel.ERROR, message).Send(this);
+            }
+        }
+
+        public override void LogWarning(string message, string solution, Dictionary<string, string> metadata)
+        {
+            Logger.LogWarning(message);
+            Logger.LogWarning(solution);
+            
+            if (PluginConfig.AutoReportingEnabled)
+            {
+                new PluginEvent(Plugin, Plugin.GetPlatform(), EnumEventLevel.ERROR, message).Send(this);
+            }
         }
 
         public override void LogError(string message)
         {
             Logger.LogError(message);
+            
+            if (PluginConfig.AutoReportingEnabled)
+            {
+                new PluginEvent(Plugin, Plugin.GetPlatform(), EnumEventLevel.ERROR, message).Send(this);
+            }
+        }
+
+        public override void LogError(string message, Dictionary<string, string> metadata)
+        {
+            Logger.LogError(message);
+            if (PluginConfig.AutoReportingEnabled)
+            {
+                new PluginEvent(Plugin, Plugin.GetPlatform(), EnumEventLevel.ERROR, message).Send(this);
+            }
         }
 
         public override void LogInfo(string message)
@@ -86,7 +122,7 @@ namespace Tebex.Adapters
             }
         }
 
-        public override void ReplyPlayer(object player, string message)
+        public void ReplyPlayer(object player, string message)
         {
             if (player is UnturnedPlayer)
             {
@@ -103,7 +139,7 @@ namespace Tebex.Adapters
             }
         }
 
-        public override bool ExecuteOfflineCommand(TebexApi.Command command, object playerObj, string commandName, string[] args)
+        public override bool ExecuteOfflineCommand(TebexApi.Command command, string commandName, string[] args)
         {
             var serverCommandTaskCompletionSource = new TaskCompletionSource<bool>();
             
@@ -126,7 +162,7 @@ namespace Tebex.Adapters
                 }
                 else
                 {
-                    LogWarning($"offline command did not succeed for player '{command.Player.Username}': {fullCommand}");
+                    LogError($"offline command did not succeed for player '{command.Player.Username}': {fullCommand}");
                     serverCommandTaskCompletionSource.SetResult(false);
                 }
             });
@@ -134,17 +170,19 @@ namespace Tebex.Adapters
             return serverCommandTaskCompletionSource.Task.Result;
         }
 
-        private bool ExecuteServerCommand(TebexApi.Command command, object playerObj, string commandName, string[] args)
+        private bool ExecuteServerCommand(TebexApi.Command command, TebexApi.DuePlayer duePlayer, string commandName, string[] args)
         {
             var serverCommandTaskCompletionSource = new TaskCompletionSource<bool>();
             var fullCommand = $"{commandName} {string.Join(" ", args)}";
-            UnturnedPlayer player = (playerObj as SteamPlayer).ToUnturnedPlayer();
-            ConsolePlayer executer = new ConsolePlayer();
+
+
+            UnturnedPlayer player = GetPlayerRef(duePlayer.UUID) as UnturnedPlayer;
+            ConsolePlayer executor = new ConsolePlayer();
             var commandFound = false;
             TaskDispatcher.QueueOnMainThread(() =>
             {
                 // Rocket seems to return success only if the command is found, but not necessarily if it successfully executed.
-                commandFound = R.Commands.Execute(executer, fullCommand);
+                commandFound = R.Commands.Execute(executor, fullCommand);
                 if (commandFound)
                 {
                     serverCommandTaskCompletionSource.SetResult(true);
@@ -152,21 +190,21 @@ namespace Tebex.Adapters
                 else
                 {
                     serverCommandTaskCompletionSource.SetResult(false);
-                    LogWarning($"online command did not succeed for player '{player.SteamPlayer().player.name}': {fullCommand}");
+                    LogError($"online command did not succeed for player '{player.SteamPlayer().player.name}': {fullCommand}");
                 }
             });
             serverCommandTaskCompletionSource.Task.Wait();
             return serverCommandTaskCompletionSource.Task.Result;
         }
         
-        public override bool ExecuteOnlineCommand(TebexApi.Command command, object playerObj, string commandName, string[] args)
+        public override bool ExecuteOnlineCommand(TebexApi.Command command, TebexApi.DuePlayer duePlayer, string commandName, string[] args)
         {
-            return ExecuteServerCommand(command, playerObj, commandName, args);
+            return ExecuteServerCommand(command, duePlayer, commandName, args);
         }
 
-        public override bool IsPlayerOnline(string playerRefId)
+        public override bool IsPlayerOnline(TebexApi.DuePlayer duePlayer)
         {
-            object player = GetPlayerRef(playerRefId);
+            object player = GetPlayerRef(duePlayer.UUID);
             if (player is UnturnedPlayer)
             {
                 return true;
@@ -201,9 +239,9 @@ namespace Tebex.Adapters
             return null;
         }
 
-        public override string ExpandUsernameVariables(string input, object playerObj)
+        public override string ExpandUsernameVariables(string input, TebexApi.DuePlayer player)
         {
-            SteamPlayer steamPlayer = (SteamPlayer)playerObj;
+            SteamPlayer steamPlayer = GetPlayerRef(player.UUID) as SteamPlayer;
             UnturnedPlayer unturnedPlayer = UnturnedPlayer.FromSteamPlayer(steamPlayer);
 
             input = input.Replace("{id}", steamPlayer.playerID.steamID.ToString());
@@ -240,30 +278,40 @@ namespace Tebex.Adapters
                 {
                     onSuccess?.Invoke(code, response);
                 }
-                else if (code == 403)
+                else if (code == 403) // secret key is incorrect or not set
                 {
-                    LogError("Your server's secret key is either not set or incorrect.");
-                    LogError("Use tebex:secret \"<key>\" to set your secret key to the one associated with your webstore.");
-                    LogError("Set up your store and get your secret key at https://tebex.io/");
+                    if (IsTebexReady()) // user has set the secret key but api is denying access
+                    {
+                        LogError($"403 Forbidden {endpoint} | {body} -> {response}", new Dictionary<string, string>()
+                        {
+                            {"body", body},
+                            {"url", endpoint},
+                            {"code", code.ToString()},
+                            {"response", response}
+                        });
+                    }
+                    else
+                    {
+                        LogWarning("Your server's secret key is not set or incorrect.", "Use tebex:secret \"<key>\" to set your secret key to the one associated with your webstore.");
+                    }
                 }
                 else if (code == 429) // rate limited
                 {
-                    LogWarning("We are being rate limited by Tebex API. If this issue continues, please report a problem.");
-                    LogWarning("Requests will resume after 5 minutes.");
+                    LogWarning("We are being rate limited by Tebex API. If this issue continues, please report a problem.", "Requests will resume after 5 minutes.");
                     Plugin.PluginTimers().Once(60 * 5, () =>
                     {
-                        LogWarning("Tebex rate limit timer has elapsed, processing will now continue");
+                        LogInfo("Tebex rate limit timer has elapsed, processing will now continue");
                         IsRateLimited = false;
                     });
                 }
                 else if (code == 500)
                 {
-                    ReportAutoTriageEvent(TebexTriage.CreateAutoTriageEvent("Internal server error from Plugin API",
+                    LogError("Internal server error from Plugin API",
                         new Dictionary<string, string>
                         {
                             { "request", body },
                             { "response", response },
-                        }));
+                        });
                     LogDebug(
                         "Internal Server Error from Tebex API. Please try again later. Error details follow below.");
                     LogDebug(response);
@@ -277,12 +325,12 @@ namespace Tebex.Adapters
                 }
                 else if (code == 0) // timeout or cancelled
                 {
-                    ReportAutoTriageEvent(TebexTriage.CreateAutoTriageEvent("Request timeout to Plugin API",
+                    LogError("Request timeout to Plugin API",
                         new Dictionary<string, string>
                         {
                             { "request", body },
                             { "response", response },
-                        }));
+                        });
                     LogDebug("Request Timeout from Tebex API. Please try again later.");
                 }
                 else // response is a general failure error message in a json formatted response from the api
@@ -292,22 +340,21 @@ namespace Tebex.Adapters
                         var error = JsonConvert.DeserializeObject<TebexApi.TebexError>(response);
                         if (error != null)
                         {
-                            ReportAutoTriageEvent(TebexTriage.CreateAutoTriageEvent(
+                            LogError(
                                 "Plugin API reported general failure", new Dictionary<string, string>
                                 {
                                     { "request", body },
                                     { "error", error.ErrorMessage },
-                                }));
+                                });
                             onApiError?.Invoke(error);
                         }
                         else
                         {
-                            ReportAutoTriageEvent(TebexTriage.CreateAutoTriageEvent(
-                                "Plugin API error could not be interpreted!", new Dictionary<string, string>
+                            LogError("Plugin API error could not be interpreted!", new Dictionary<string, string>
                                 {
                                     { "request", body },
                                     { "response", response },
-                                }));
+                                });
                             LogDebug($"Failed to unmarshal an expected error response from API.");
                             onServerError?.Invoke(code, response);
                         }
@@ -332,15 +379,6 @@ namespace Tebex.Adapters
                     }
                 }
             }, verb, headers, 10.0f);
-        }
-
-        public override TebexTriage.AutoTriageEvent FillAutoTriageParameters(TebexTriage.AutoTriageEvent partialEvent)
-        {
-            partialEvent.GameId = Plugin.GetGame();
-            partialEvent.FrameworkId = "RocketMod/LGM";
-            partialEvent.PluginVersion = Plugins.TebexUnturned.GetPluginVersion();
-            partialEvent.ServerIp = new IPAddress(Provider.ip).ToString();
-            return partialEvent;
         }
 
         public void SaveConfiguration()
