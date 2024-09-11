@@ -20,22 +20,24 @@ namespace Tebex.Plugins
         
         public static string GetPluginVersion()
         {
-            return "2.0.0-DEV";
+            return "2.0.1";
         }
 
         protected override void Load()
         {
             // Load configuration
             base.Load();
-            
-            // Sync configuration to BaseTebexAdapter model
-            BaseTebexAdapter.PluginConfig.SecretKey = Configuration.Instance.SecretKey;
-            BaseTebexAdapter.PluginConfig.AutoReportingEnabled = Configuration.Instance.AutoReportingEnabled;
-            BaseTebexAdapter.PluginConfig.CacheLifetime = Configuration.Instance.CacheLifetime;
-            BaseTebexAdapter.PluginConfig.DebugMode = Configuration.Instance.DebugMode;
-            BaseTebexAdapter.PluginConfig.CustomBuyCommand = Configuration.Instance.CustomBuyCommand; // custom buy command from legacy plugin
-            BaseTebexAdapter.PluginConfig.BuyEnabled = Configuration.Instance.BuyEnabled; // custom buy enabled setting from legacy plugin
-            Init();
+            Configuration.Load(tebexConfig =>
+            {
+                // Sync configuration to BaseTebexAdapter model
+                BaseTebexAdapter.PluginConfig.SecretKey = tebexConfig.Instance.SecretKey;
+                BaseTebexAdapter.PluginConfig.AutoReportingEnabled = tebexConfig.Instance.AutoReportingEnabled;
+                BaseTebexAdapter.PluginConfig.CacheLifetime = tebexConfig.Instance.CacheLifetime;
+                BaseTebexAdapter.PluginConfig.DebugMode = tebexConfig.Instance.DebugMode;
+                BaseTebexAdapter.PluginConfig.CustomBuyCommand = tebexConfig.Instance.CustomBuyCommand; // custom buy command from legacy plugin
+                BaseTebexAdapter.PluginConfig.BuyEnabled = tebexConfig.Instance.BuyEnabled; // custom buy enabled setting from legacy plugin
+                Init();
+            });
         }
 
         private void Init()
