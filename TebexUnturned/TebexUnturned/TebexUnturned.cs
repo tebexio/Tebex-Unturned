@@ -1,12 +1,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using Rocket.API;
+using Rocket.Core;
 using Rocket.Core.Logging;
 using Rocket.Core.Plugins;
 using Rocket.Unturned.Player;
+using SDG.Unturned;
 using Tebex.Adapters;
 using Tebex.API;
 using Tebex.Shared.Components;
+using Tebex.Triage;
 using TebexUnturned;
 
 namespace Tebex.Plugins
@@ -20,7 +23,7 @@ namespace Tebex.Plugins
         
         public static string GetPluginVersion()
         {
-            return "2.0.1";
+            return "2.0.2";
         }
 
         protected override void Load()
@@ -51,22 +54,22 @@ namespace Tebex.Plugins
             _timers = new PluginTimers(_adapter);
             
             TebexApi.Instance.InitAdapter(_adapter);
- 
-            // Check if auto reporting is disabled and show a warning if so.
-            if (!BaseTebexAdapter.PluginConfig.AutoReportingEnabled)
-            {
-                _adapter.LogWarning("Auto reporting issues to Tebex is disabled.");
-                _adapter.LogWarning("To enable, please set 'AutoReportingEnabled' to 'true' in config/Tebex.json");
-            }
 
             // Check if secret key has been set. If so, get store information and place in cache
-            if (BaseTebexAdapter.PluginConfig.SecretKey != "your-secret-key-here")
+            if (!BaseTebexAdapter.PluginConfig.SecretKey.Equals("your-secret-key-here") && !BaseTebexAdapter.PluginConfig.SecretKey.Equals(""))
             {
-                // No-op, just to place info in the cache for any future triage events
-                _adapter.FetchStoreInfo((info => { }));
+                _adapter.FetchStoreInfo(info =>
+                {
+                    // No-op, just to place info in the cache for any future triage events. Adapter places in cache
+                    _adapter.LogInfo($"Connected to Tebex store {info.AccountInfo.Name} as {info.ServerInfo.Name}");
+                }, error =>
+                {
+                    _adapter.LogError("Failed to connect to store: " + error.ErrorMessage);
+                });
                 return;
             }
 
+            // Secret key is not set
             _adapter.LogInfo("Tebex detected a new configuration file.");
             _adapter.LogInfo("Use tebex:secret <secret> to add your store's secret key.");
             _adapter.LogInfo("Alternatively, add the secret key to 'Tebex.json' and reload the plugin.");
@@ -110,7 +113,7 @@ namespace Tebex.Plugins
             // Check for default config and inform the admin that configuration is waiting.
             if (player.IsAdmin && BaseTebexAdapter.PluginConfig.SecretKey == "your-secret-key-here")
             {
-                _adapter.ReplyPlayer(player, "Tebex is not configured. Use tebex:secret <secret> from the F1 menu to add your key."); 
+                _adapter.ReplyPlayer(player, "Tebex is not configured. Use command tebex:secret <secret> to add your key."); 
                 _adapter.ReplyPlayer(player, "Get your secret key by logging in at:");
                 _adapter.ReplyPlayer(player, "https://tebex.io/");
             }
@@ -211,14 +214,28 @@ namespace Tebex.Plugins
             return new BaseTebexAdapter.TebexConfig();
         }
 
-        public static BaseTebexAdapter GetAdapter()
+        public static TebexUnturnedAdapter GetAdapter()
         {
             return _adapter;
         }
 
         public void SaveConfiguration()
         {
+            Configuration.Instance.CacheLifetime = Configuration.Instance.CacheLifetime;
+            Configuration.Instance.BuyEnabled = Configuration.Instance.BuyEnabled;
+            Configuration.Instance.SecretKey = Configuration.Instance.SecretKey;
+            Configuration.Instance.DebugMode = Configuration.Instance.DebugMode;
+            Configuration.Instance.CustomBuyCommand = Configuration.Instance.CustomBuyCommand;
             Configuration.Save();
+        }
+        
+        /// <summary>
+        /// Defines information about the current platform / environment we are executing in.
+        /// </summary>
+        /// <returns><see cref="TebexPlatform"/></returns>
+        public TebexPlatform GetPlatform()
+        {
+            return new TebexPlatform(GetPluginVersion(), new TebexTelemetry("Unturned", TebexUnturned.GetPluginVersion(), Provider.APP_VERSION));
         }
     }
 }

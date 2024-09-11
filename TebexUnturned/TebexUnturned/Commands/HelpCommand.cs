@@ -39,8 +39,6 @@ namespace TebexUnturned.Commands
                 _adapter.ReplyPlayer(player,
                     "tebex:refresh                     - Refreshes store information, packages, categories, etc.");
                 _adapter.ReplyPlayer(player,
-                    "tebex:report                      - Generates a report for the Tebex support team.");
-                _adapter.ReplyPlayer(player,
                     "tebex:ban <playerId>              - Bans a player from using your Tebex store.");
                 _adapter.ReplyPlayer(player,
                     "tebex:lookup <playerId>           - Looks up store statistics for the given player.");

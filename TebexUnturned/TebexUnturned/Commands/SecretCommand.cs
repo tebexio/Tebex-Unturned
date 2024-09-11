@@ -56,7 +56,10 @@ namespace TebexUnturned.Commands
             {
                 _adapter.ReplyPlayer(player, $"Successfully set your secret key.");
                 _adapter.ReplyPlayer(player,
-                    $"Store set as: {info.ServerInfo.Name} for the web store {info.AccountInfo.Name}");
+                    $"Connected as {info.ServerInfo.Name} for the web store {info.AccountInfo.Name}");
+            }, (error) =>
+            {
+                _adapter.ReplyPlayer(player, "Failed to set your secret key: " + error.ErrorMessage);
             });
         }
     }

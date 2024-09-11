@@ -23,7 +23,7 @@ namespace TebexUnturned.Commands
         public void Execute(IRocketPlayer player, string[] args)
         {
             var _adapter = Tebex.Plugins.TebexUnturned.GetAdapter();
-            if (!_adapter.IsReady)
+            if (!_adapter.IsTebexReady())
             {
                 _adapter.ReplyPlayer(player, "Tebex is not setup.");
                 return;
@@ -36,6 +36,9 @@ namespace TebexUnturned.Commands
                 _adapter.ReplyPlayer(player, $"{info.ServerInfo.Name} for webstore {info.AccountInfo.Name}");
                 _adapter.ReplyPlayer(player, $"Server prices are in {info.AccountInfo.Currency.Iso4217}");
                 _adapter.ReplyPlayer(player, $"Webstore domain {info.AccountInfo.Domain}");
+            }, error =>
+            {
+                _adapter.ReplyPlayer(player, "Failed to get store information: " + error.ErrorMessage);
             });
         }
     }
