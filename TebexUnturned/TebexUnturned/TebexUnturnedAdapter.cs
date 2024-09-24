@@ -75,7 +75,7 @@ namespace Tebex.Adapters
             
             if (PluginConfig.AutoReportingEnabled)
             {
-                new PluginEvent(Plugin, Plugin.GetPlatform(), EnumEventLevel.ERROR, message).Send(this);
+                new PluginEvent(Plugin, Plugin.GetPlatform(), EnumEventLevel.WARNING, message).Send(this);
             }
         }
 
