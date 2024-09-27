@@ -244,20 +244,20 @@ namespace Tebex.Adapters
             SteamPlayer steamPlayer = GetPlayerRef(player.UUID) as SteamPlayer;
             UnturnedPlayer unturnedPlayer = UnturnedPlayer.FromSteamPlayer(steamPlayer);
 
-            input = input.Replace("{id}", steamPlayer.playerID.steamID.ToString());
+            input = input.Replace("{id}", player.UUID);
             input = input.Replace("{name}", unturnedPlayer.SteamName);
             input = input.Replace("{username}", steamPlayer.playerID.playerName);
             input = input.Replace("{steamname}", unturnedPlayer.SteamName);
             input = input.Replace("{charactername}", unturnedPlayer.CharacterName);
             input = input.Replace("{displayname}", unturnedPlayer.DisplayName);
-            input = input.Replace("{uuid}", steamPlayer.playerID.steamID.ToString());
+            input = input.Replace("{uuid}", player.UUID);
 
             return input;
         }
 
         public override string ExpandOfflineVariables(string input, TebexApi.PlayerInfo info)
         {
-            input = input.Replace("{id}", info.Id);
+            input = input.Replace("{id}", info.Uuid);
             input = input.Replace("{name}", info.Username);
             input = input.Replace("{username}", info.Username);
             input = input.Replace("{steamname}", info.Username);
