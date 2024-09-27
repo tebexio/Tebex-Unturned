@@ -99,11 +99,24 @@ namespace Tebex.Triage
         /// <summary>
         /// SendAllEvents will attempt to send all queued plugin events. If we have too many to send (we receive 413 Request Content Too Large)
         /// then we will batch the events we need to send in <see cref="_trySendTooLargeEvents"/>
+        ///
+        /// The event queue is cleared as a result of this function
         /// </summary>
         /// <param name="adapter"></param>
         public static void SendAllEvents(BaseTebexAdapter adapter)
         {
-            adapter.MakeWebRequest("https://plugin-logs.tebex.io/events", JsonConvert.SerializeObject(PLUGIN_EVENTS), TebexApi.HttpVerb.POST,
+            // Dequeue each event into a list that we will serialize.
+            List<PluginEvent> eventsToSend = new List<PluginEvent>();
+            while (PLUGIN_EVENTS.Count > 0)
+            {
+                var success = PLUGIN_EVENTS.TryDequeue(out var pluginEvent);
+                if (success)
+                {
+                    eventsToSend.Add(pluginEvent);    
+                }
+            }
+            
+            adapter.MakeWebRequest("https://plugin-logs.tebex.io/events", JsonConvert.SerializeObject(eventsToSend), TebexApi.HttpVerb.POST,
                 (code, body) =>
                 {
                     if (code < 300 && code > 199) // success
@@ -114,6 +127,7 @@ namespace Tebex.Triage
                     else if (code == 413) // Request Entity Too Large can occur with especially large event groups
                     {
                         _trySendTooLargeEvents(adapter);
+                        return;
                     }
                     
                     adapter.LogDebug("Failed to send plugin logs. Unexpected response code: " + code);

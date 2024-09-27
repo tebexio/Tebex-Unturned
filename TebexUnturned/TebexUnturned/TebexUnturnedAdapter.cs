@@ -33,19 +33,31 @@ namespace Tebex.Adapters
             // Initialize timers, hooks, etc. here
             Plugin.PluginTimers().Every(121.0f, () =>
             {
-                ProcessCommandQueue(false);
+                if (IsTebexReady())
+                {
+                    ProcessCommandQueue(false);    
+                }
             });
             Plugin.PluginTimers().Every(61.0f, () =>
             {
-                DeleteExecutedCommands(false);
+                if (IsTebexReady())
+                {
+                    DeleteExecutedCommands(false);    
+                }
             });
             Plugin.PluginTimers().Every(61.0f, () =>
             {
-                ProcessJoinQueue(false);
+                if (IsTebexReady())
+                {
+                    ProcessJoinQueue(false);    
+                }
             });
             Plugin.PluginTimers().Every((60.0f * 15) + 1.0f, () =>  // Every 15 minutes for store info
             {
-                RefreshStoreInformation(false);
+                if (IsTebexReady())
+                {
+                    RefreshStoreInformation(false);    
+                }
             });
             Plugin.PluginTimers().Every(0.5f, () =>
             {
@@ -75,7 +87,7 @@ namespace Tebex.Adapters
             
             if (PluginConfig.AutoReportingEnabled)
             {
-                new PluginEvent(Plugin, Plugin.GetPlatform(), EnumEventLevel.ERROR, message).Send(this);
+                new PluginEvent(Plugin, Plugin.GetPlatform(), EnumEventLevel.WARNING, message).Send(this);
             }
         }
 
@@ -244,20 +256,20 @@ namespace Tebex.Adapters
             SteamPlayer steamPlayer = GetPlayerRef(player.UUID) as SteamPlayer;
             UnturnedPlayer unturnedPlayer = UnturnedPlayer.FromSteamPlayer(steamPlayer);
 
-            input = input.Replace("{id}", steamPlayer.playerID.steamID.ToString());
+            input = input.Replace("{id}", player.UUID);
             input = input.Replace("{name}", unturnedPlayer.SteamName);
             input = input.Replace("{username}", steamPlayer.playerID.playerName);
             input = input.Replace("{steamname}", unturnedPlayer.SteamName);
             input = input.Replace("{charactername}", unturnedPlayer.CharacterName);
             input = input.Replace("{displayname}", unturnedPlayer.DisplayName);
-            input = input.Replace("{uuid}", steamPlayer.playerID.steamID.ToString());
+            input = input.Replace("{uuid}", player.UUID);
 
             return input;
         }
 
         public override string ExpandOfflineVariables(string input, TebexApi.PlayerInfo info)
         {
-            input = input.Replace("{id}", info.Id);
+            input = input.Replace("{id}", info.Uuid);
             input = input.Replace("{name}", info.Username);
             input = input.Replace("{username}", info.Username);
             input = input.Replace("{steamname}", info.Username);
@@ -271,7 +283,7 @@ namespace Tebex.Adapters
         {
             var headers = new Dictionary<string, string>();
             headers.Add("X-Tebex-Secret", PluginConfig.SecretKey);
-            
+            headers.Add("User-Agent", "Unturned/" + Plugins.TebexUnturned.GetPluginVersion());
             Plugin.WebRequests().Enqueue(endpoint, body, (code, response) =>
             {
                 if (code == 200 || code == 201 || code == 202 || code == 204)
