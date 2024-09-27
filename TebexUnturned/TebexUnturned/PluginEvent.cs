@@ -105,17 +105,22 @@ namespace Tebex.Triage
         /// <param name="adapter"></param>
         public static void SendAllEvents(BaseTebexAdapter adapter)
         {
-            adapter.MakeWebRequest("https://plugin-logs.tebex.io/events", JsonConvert.SerializeObject(PLUGIN_EVENTS), TebexApi.HttpVerb.POST,
+            // Dequeue each event into a list that we will serialize.
+            List<PluginEvent> eventsToSend = new List<PluginEvent>();
+            while (PLUGIN_EVENTS.Count > 0)
+            {
+                var success = PLUGIN_EVENTS.TryDequeue(out var pluginEvent);
+                if (success)
+                {
+                    eventsToSend.Add(pluginEvent);    
+                }
+            }
+            
+            adapter.MakeWebRequest("https://plugin-logs.tebex.io/events", JsonConvert.SerializeObject(eventsToSend), TebexApi.HttpVerb.POST,
                 (code, body) =>
                 {
                     if (code < 300 && code > 199) // success
                     {
-                        // clear event queue
-                        while (PLUGIN_EVENTS.Count > 0)
-                        {
-                            var success = PLUGIN_EVENTS.TryDequeue(out var pluginEvent);
-                        }
-                        
                         adapter.LogDebug("Successfully sent plugin events");
                         return;
                     }
