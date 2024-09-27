@@ -33,19 +33,31 @@ namespace Tebex.Adapters
             // Initialize timers, hooks, etc. here
             Plugin.PluginTimers().Every(121.0f, () =>
             {
-                ProcessCommandQueue(false);
+                if (IsTebexReady())
+                {
+                    ProcessCommandQueue(false);    
+                }
             });
             Plugin.PluginTimers().Every(61.0f, () =>
             {
-                DeleteExecutedCommands(false);
+                if (IsTebexReady())
+                {
+                    DeleteExecutedCommands(false);    
+                }
             });
             Plugin.PluginTimers().Every(61.0f, () =>
             {
-                ProcessJoinQueue(false);
+                if (IsTebexReady())
+                {
+                    ProcessJoinQueue(false);    
+                }
             });
             Plugin.PluginTimers().Every((60.0f * 15) + 1.0f, () =>  // Every 15 minutes for store info
             {
-                RefreshStoreInformation(false);
+                if (IsTebexReady())
+                {
+                    RefreshStoreInformation(false);    
+                }
             });
             Plugin.PluginTimers().Every(0.5f, () =>
             {
@@ -271,7 +283,7 @@ namespace Tebex.Adapters
         {
             var headers = new Dictionary<string, string>();
             headers.Add("X-Tebex-Secret", PluginConfig.SecretKey);
-            
+            headers.Add("User-Agent", "Unturned/" + Plugins.TebexUnturned.GetPluginVersion());
             Plugin.WebRequests().Enqueue(endpoint, body, (code, response) =>
             {
                 if (code == 200 || code == 201 || code == 202 || code == 204)
