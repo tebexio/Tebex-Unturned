@@ -283,7 +283,6 @@ namespace Tebex.Adapters
         {
             var headers = new Dictionary<string, string>();
             headers.Add("X-Tebex-Secret", PluginConfig.SecretKey);
-            headers.Add("User-Agent", "Unturned/" + Plugins.TebexUnturned.GetPluginVersion());
             Plugin.WebRequests().Enqueue(endpoint, body, (code, response) =>
             {
                 if (code == 200 || code == 201 || code == 202 || code == 204)

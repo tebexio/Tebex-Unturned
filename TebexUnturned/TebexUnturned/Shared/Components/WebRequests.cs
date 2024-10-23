@@ -55,6 +55,7 @@ namespace Tebex.Shared.Components
                                                             request.Method == TebexApi.HttpVerb.PUT || request.Method == TebexApi.HttpVerb.DELETE))
                 {
                     webRequest.ContentType = "application/json";
+                    webRequest.UserAgent = "Unturned/" + Plugins.TebexUnturned.GetPluginVersion();
                     using (Stream stream = await Task.Factory.FromAsync(webRequest.BeginGetRequestStream,
                                webRequest.EndGetRequestStream, null))
                     using (StreamWriter writer = new StreamWriter(stream))
