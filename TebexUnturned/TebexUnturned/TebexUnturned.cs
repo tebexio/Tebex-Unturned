@@ -23,7 +23,7 @@ namespace Tebex.Plugins
         
         public static string GetPluginVersion()
         {
-            return "2.0.4-DEV";
+            return "2.0.4";
         }
 
         protected override void Load()
